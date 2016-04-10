@@ -1,4 +1,4 @@
-var AxisScaleStyle = require( './view/AxisScaleStyle');
+var AxisScaleStyle = require( './AxisScaleStyle');
 
 /**
  *

@@ -44,7 +44,7 @@ var ChartCanvasGL = function ( view ) {
 };
 
 ChartCanvasGL.prototype.updateCamera = function () {
-    var size = view.selection.size;
+    var size = this.view.selection.size;
     var camera = this.camera;
 
     camera.left = -size.x / 2;

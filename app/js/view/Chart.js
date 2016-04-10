@@ -5,6 +5,12 @@
 var Chart = function () {
     /**
      *
+     * @type {Element}
+     */
+    this.el = document.createElement('div');
+    this.el.className = 'chart';
+    /**
+     *
      * @type {null}
      */
     this.selection = null;
@@ -34,6 +40,8 @@ var Chart = function () {
  */
 Chart.prototype.addXAxisView = function (axisView) {
     this.axisViews.x.push(axisView);
+    this.el.appendChild(axisView.el);
+    axisView.el.classList.add('horizontal');
 };
 
 /**
@@ -42,6 +50,18 @@ Chart.prototype.addXAxisView = function (axisView) {
  */
 Chart.prototype.addYAxisView = function (axisView) {
     this.axisViews.y.push(axisView);
+    this.el.appendChild(axisView.el);
+    axisView.el.classList.add('vertical');
+};
+
+/**
+ *
+ * @param chartCanvas
+ */
+Chart.prototype.setChartCanvas = function (chartCanvas) {
+    this.chartCanvas = chartCanvas;
+    this.chartCanvas.selection = this.selection;
+    this.el.appendChild(this.chartCanvas.el);
 };
 
 module.exports = Chart;
