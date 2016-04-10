@@ -1,5 +1,5 @@
 var ChannelView = function () {
-    this.model = null;
+    this.channel = null;
     this.style = null;
 };
 

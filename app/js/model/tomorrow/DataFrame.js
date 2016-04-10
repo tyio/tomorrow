@@ -12,7 +12,7 @@ var DataFrame = function () {
      *
      * @type {Array}
      */
-    this.data = [];
+    this.data = new RowFirstTable();
     /**
      *
      * @type {Channel}
