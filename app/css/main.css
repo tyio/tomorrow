@@ -1,0 +1,23 @@
+.chart {
+    position: relative;
+    margin-left: 30px;
+}
+.axis.horizontal {
+    position: absolute;
+    text-align: right;
+}
+.axis.vertical {
+    position: absolute;
+    top: 0;
+}
+
+.axis.vertical .axis-scale {
+    transform: rotate(90deg);
+    transform-origin: top left 0;
+}
+
+.axis-scale div {
+    background-color: black;
+    height: 10px;
+    width: 1px;
+}

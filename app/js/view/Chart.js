@@ -1,3 +1,5 @@
+var Orientation = require( '../model/tomorrow/Orientation');
+
 /**
  *
  * @constructor
@@ -36,22 +38,11 @@ var Chart = function () {
 
 /**
  *
- * @param [AxisView} x axis view to add
+ * @param [AxisView} axis view to add
  */
-Chart.prototype.addXAxisView = function (axisView) {
-    this.axisViews.x.push(axisView);
-    this.el.appendChild(axisView.el);
-    axisView.el.classList.add('horizontal');
-};
-
-/**
- *
- * @param [AxisView} y axis view to add
- */
-Chart.prototype.addYAxisView = function (axisView) {
+Chart.prototype.addAxisView = function (axisView) {
     this.axisViews.y.push(axisView);
     this.el.appendChild(axisView.el);
-    axisView.el.classList.add('vertical');
 };
 
 /**
