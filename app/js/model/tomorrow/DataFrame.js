@@ -23,38 +23,54 @@ var DataFrame = function () {
 };
 
 /**
- * Adds a new channel
- * @param channel channel to be added
+ *
+ * @param {Channel} channel
  */
 DataFrame.prototype.addChannel = function (channel) {
     this.channels.push(channel);
 };
 
 /**
- * Removes channel by its id
- * @param id id of the channel to be removed
+ *
+ * @param {Channel} channel
+ * @returns {number}
  */
-DataFrame.prototype.removeChannel = function(id) {
+DataFrame.prototype.getValueIndexByChannel = function (channel) {
     for (var i = 0; i < this.channels.length; i++) {
-        var channel = this.channels[i];
-        if (channel.id === id) {
-            this.channels.splice(i, 1);
-            return channel;
+        var c = this.channels[i];
+        if (c.id === channel.id) {
+            return i;
         }
+    }
+
+    return -1;
+};
+
+/**
+ *
+ * @param {Channel} channel to remove
+ * @returns {Channel}
+ */
+DataFrame.prototype.removeChannel = function(channel) {
+    var i = this.getValueIndexByChannel(channel);
+
+    if (i != -1) {
+        this.channels.splice(i, 1);
+        return channel;
     }
 };
 
 /**
- * Sets master channel for this dataframe
- * @param id id of a channel to be used as a master
+ *
+ * @param {Channel} channel to set as a master
+ * @returns {Channel}
  */
-DataFrame.prototype.setMasterChannel = function(id){
-    for (var i = 0; i < this.channels.length; i++) {
-        var channel = this.channels[i];
-        if (channel.id === id) {
-            this.masterChannel = channel;
-            return channel;
-        }
+DataFrame.prototype.setMasterChannel = function(channel){
+    var i = this.getValueIndexByChannel(channel);
+
+    if (i != -1) {
+        this.masterChannel = channel;
+        return channel;
     }
 };
 
