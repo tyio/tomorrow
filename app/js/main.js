@@ -74,7 +74,8 @@ var chartCanvas = new ChartCanvas();
 chartCanvas.dataFrame = dataFrame;
 chartCanvas.channelViews.push(channelView);
 
-var axisScale
+var axisScaleStyle = new AxisScaleStyle();
+axisScaleStyle
 
 var horizontalAxisView = new AxisView();
 
