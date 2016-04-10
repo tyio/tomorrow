@@ -48,12 +48,14 @@ temperatureAxisScale.markStrideSkip = 0;
 temperatureAxisScale.markStrideFill = 0;
 
 var horizontalAxis = new Axis();
-horizontalAxis.scales.push(timeAxisScale);
+horizontalAxis.addScale(timeAxisScale);
 
 var verticalAxis = new Axis();
-verticalAxis.scales.push(temperatureAxisScale);
+verticalAxis.addScale(temperatureAxisScale);
 
 var grid = new Grid();
+grid.addXAxisScale(timeAxisScale);
+grid.addYAxisScale(temperatureAxisScale);
 
 var channelView = new ChannelView();
 channelView.channel = time;
