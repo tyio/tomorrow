@@ -1,4 +1,10 @@
+var uuid = require('../core/uuid');
 var Channel = function Channel() {
+    /**
+     *
+     * @type {string}
+     */
+    this.id = uuid();
     /**
      * 
      * @type {string}
