@@ -16,6 +16,9 @@ var ChartCanvasGL = function ( view ) {
 
     var renderer = this.renderer = new THREE.WebGLRenderer( {antialias : true} );
     renderer.setPixelRatio( window.devicePixelRatio );
+
+    renderer.setClearColor( 0, 0 );
+
     renderer.setSize( view.size.x, view.size.y );
 
     var channelViews = view.channelViews;
@@ -34,9 +37,9 @@ var ChartCanvasGL = function ( view ) {
         self.render();
     }
 
-    view.selection.position.onChanged.add(handleSelectionChange);
-    view.selection.size.onChanged.add(handleSelectionChange);
-    
+    view.selection.position.onChanged.add( handleSelectionChange );
+    view.selection.size.onChanged.add( handleSelectionChange );
+
     this.el = nrenderer.domElement;
 };
 
