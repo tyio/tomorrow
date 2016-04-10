@@ -40,7 +40,7 @@ var ChartCanvasGL = function ( view ) {
     view.selection.position.onChanged.add( handleSelectionChange );
     view.selection.size.onChanged.add( handleSelectionChange );
 
-    this.el = nrenderer.domElement;
+    this.el = renderer.domElement;
 };
 
 ChartCanvasGL.prototype.updateCamera = function () {
