@@ -14,7 +14,7 @@ var ChartCanvasGL = function ( view ) {
 
     this.camera = new THREE.OrthographicCamera( -1 / 2, 1 / 2, 1 / 2. - 1 / 2, 1, 100 );
 
-    var renderer = this.renderer = new THREE.WebGLRenderer( {antialias : true} );
+    var renderer = this.renderer = new THREE.WebGLRenderer( {antialias : true, alpha : true} );
     renderer.setPixelRatio( window.devicePixelRatio );
 
     renderer.setClearColor( 0, 0 );
@@ -33,7 +33,7 @@ var ChartCanvasGL = function ( view ) {
 
     function handleSelectionChange() {
         self.updateCamera();
-        self.paint();
+        self.paint( self.view.selection );
         self.render();
     }
 
@@ -41,16 +41,37 @@ var ChartCanvasGL = function ( view ) {
     view.selection.size.onChanged.add( handleSelectionChange );
 
     this.el = renderer.domElement;
+
+    function updateView() {
+        self.render();
+        requestAnimationFrame( updateView );
+    }
+
+    handleSelectionChange();
+    updateView();
 };
 
 ChartCanvasGL.prototype.updateCamera = function () {
-    var size = this.view.selection.size;
+    var selection = this.view.selection;
+    var size = selection.size;
     var camera = this.camera;
 
-    camera.left = -size.x / 2;
-    camera.right = size.x / 2;
-    camera.top = size.y / 2;
-    camera.bottom = -size.y / 2;
+    // camera.left = 0;
+    // camera.right = size.x;
+    // camera.top = size.y;
+    // camera.bottom = 0;
+
+    camera.left = 0;
+    camera.right = -size.x;
+    camera.top = size.y;
+    camera.bottom = 0;
+
+    camera.near = 0;
+    camera.far = 100;
+
+    camera.position.set( selection.position.x, selection.position.y, -1 );
+    camera.lookAt( new THREE.Vector3( selection.position.x, selection.position.y, 0 ) );
+
     camera.updateProjectionMatrix();
 };
 
