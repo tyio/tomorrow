@@ -13,13 +13,20 @@ var ChartCanvasGL = function ( view ) {
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.OrthographicCamera( -1 / 2, 1 / 2, 1 / 2. - 1 / 2, 1, 100 );
+    this.camera.position.set( 0, 0, 0 );
+    this.camera.lookAt( new THREE.Vector3( 0, 0, 1 ) );
 
     var renderer = this.renderer = new THREE.WebGLRenderer( {antialias : true, alpha : true} );
     renderer.setPixelRatio( window.devicePixelRatio );
 
     renderer.setClearColor( 0, 0 );
 
-    renderer.setSize( view.size.x, view.size.y );
+    function handleViewSizeChange(  ) {
+        renderer.setSize( view.size.x, view.size.y );
+    }
+    
+    view.size.onChanged.add(handleViewSizeChange);
+    handleViewSizeChange();
 
     var channelViews = view.channelViews;
     for ( var i = 0; i < channelViews.length; i++ ) {
@@ -32,7 +39,8 @@ var ChartCanvasGL = function ( view ) {
     var self = this;
 
     function handleSelectionChange() {
-        self.updateCamera();
+        self.__cameraNeedsUpdate = true;
+
         self.paint( self.view.selection );
         self.render();
     }
@@ -49,6 +57,13 @@ var ChartCanvasGL = function ( view ) {
 
     handleSelectionChange();
     updateView();
+
+    //repaint flag
+    this.__needsRepaint = true;
+    //camera update flag
+    this.__cameraNeedsUpdate = true;
+    //flag for rerendering
+    this.__renderDirty = true;
 };
 
 ChartCanvasGL.prototype.updateCamera = function () {
@@ -70,9 +85,12 @@ ChartCanvasGL.prototype.updateCamera = function () {
     camera.far = 100;
 
     camera.position.set( selection.position.x, selection.position.y, -1 );
-    camera.lookAt( new THREE.Vector3( selection.position.x, selection.position.y, 0 ) );
 
     camera.updateProjectionMatrix();
+
+    this.__cameraNeedsUpdate = false;
+    //mark for update
+    this.__renderDirty = true;
 };
 
 ChartCanvasGL.prototype.addChannelView = function ( view ) {
@@ -82,7 +100,14 @@ ChartCanvasGL.prototype.addChannelView = function ( view ) {
 };
 
 ChartCanvasGL.prototype.render = function () {
-    this.renderer.render( this.scene, this.camera );
+    if ( this.__cameraNeedsUpdate ) {
+        this.updateCamera();
+    }
+    if ( this.__renderDirty ) {
+        this.renderer.render( this.scene, this.camera );
+
+        this.__renderDirty = false;
+    }
 };
 
 /**
@@ -140,6 +165,9 @@ ChartCanvasGL.prototype.paint = function ( selection ) {
         paintSample( record );
     }
     paintFinish();
+
+    //flag for re-rendering
+    this.__renderDirty = true;
 };
 
 module.exports = ChartCanvasGL;
