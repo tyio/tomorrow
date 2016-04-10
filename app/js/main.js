@@ -9,6 +9,9 @@ var Chart = require( './view/Chart');
 var ChartCanvas = require( './view/ChartCanvas');
 var ChannelView = require( './view/ChannelView');
 var ChannelStyle = require( './view/ChannelStyle');
+var GridView = require( './view/GridView');
+var AxisView = require( './view/AxisView');
+var AxisScaleView = require( './view/AxisScaleView');
 
 var time = new Channel();
 time.name = 'time';
@@ -69,5 +72,11 @@ var chartCanvas = new ChartCanvas();
 chartCanvas.dataFrame = dataFrame;
 chartCanvas.channelViews.push(channelView);
 
+var horizontalAxisView = new AxisView();
+
+var gridView = new GridView();
+gridView.grid = grid;
+
 var chart = new Chart();
 chart.chartCanvas = chartCanvas;
+chart.gridView = gridView;

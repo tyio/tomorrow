@@ -1,5 +1,17 @@
+/**
+ *
+ * @constructor
+ */
 var AxisView = function () {
-    this.model = null;
+    /**
+     *
+     * @type {null}
+     */
+    this.axis = null;
+    /**
+     *
+     * @type {Array}
+     */
     this.children = [];
 };
 

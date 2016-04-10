@@ -1,6 +1,18 @@
-var ChannelView = function () {
+/**
+ *
+ * @constructor
+ */
+var AxisScaleView = function () {
+    /**
+     *
+     * @type {null}
+     */
     this.model = null;
+    /**
+     *
+     * @type {null}
+     */
     this.style = null;
 };
 
-module.exports = ChannelView;
+module.exports = AxisScaleView;
