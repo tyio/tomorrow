@@ -42,4 +42,18 @@ DataFrame.prototype.removeChannel = function(id) {
     }
 };
 
+/**
+ * Sets master channel for this dataframe
+ * @param id id of a channel to be used as a master
+ */
+DataFrame.prototype.setMasterChannel = function(id){
+    for (var i = 0; i < this.channels.length; i++) {
+        var channel = this.channels[i];
+        if (channel.id === id) {
+            this.masterChannel = channel;
+            return channel;
+        }
+    }
+};
+
 module.exports = DataFrame;
