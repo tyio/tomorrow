@@ -31,11 +31,9 @@ dataFrame.addChannel(time);
 dataFrame.addChannel(temperature);
 dataFrame.setMasterChannel(time);
 
-dataFrame.data.addRow([0, 10]);
-dataFrame.data.addRow([1, 20]);
-dataFrame.data.addRow([2, 10]);
-dataFrame.data.addRow([3, 20]);
-dataFrame.data.addRow([4, 10]);
+for (var i = 0; i < 1000; i++) {
+    dataFrame.data.addRow([i, Math.random() * 10]);
+}
 
 var timeAxisScale = new AxisScale();
 timeAxisScale.name = time.name;
@@ -71,7 +69,7 @@ channelView.style.thickness = 1;
 channelView.style.lineStyle = 'solid';
 channelView.style.color = '#800080';
 
-var selection = new Rectangle(0, 0, 5, 7);
+var selection = new Rectangle(0, 0, 1000, 10);
 var size = new Vector2(800, 600);
 
 var chartCanvas = new ChartCanvas({
@@ -84,6 +82,7 @@ var chartCanvas = new ChartCanvas({
 var timeAxisScaleView = new AxisScaleView({
     size: size,
     selection: selection,
+    orientation: Orientation.HORIZONTAL,
     axisScale: timeAxisScale
 });
 var timeAxisView = new AxisView({
@@ -97,6 +96,7 @@ var timeAxisView = new AxisView({
 var temperatureAxisScaleView = new AxisScaleView({
     size: size,
     selection: selection,
+    orientation: Orientation.VERTICAL,
     axisScale: temperatureAxisScale
 });
 

@@ -1,5 +1,6 @@
 var AxisScaleStyle = require('./AxisScaleStyle');
 var Vector2 = require('../model/core/geom/Vector2');
+var Orientation = require( '../model/tomorrow/Orientation' );
 
 /**
  *
@@ -36,21 +37,45 @@ var AxisScaleView = function (options) {
      */
     this.selection = options.selection !== undefined ? options.selection : null;
 
+    /**
+     *
+     * @type {Orientation}
+     */
+    this.orientation = options.orientation !== undefined ? options.orientation : Orientation.HORIZONTAL;
+
     this.drawAxisScale();
 
 };
 
 AxisScaleView.prototype.drawAxisScale = function () {
+
+    function clipNumberOfMarks(numberOfMarks, totalSpace, minSpacing) {
+        var maxMarks = Math.floor(totalSpace/minSpacing);
+        return Math.min(maxMarks, numberOfMarks);
+    }
+
     if (!this.axisScale) {
         return;
     }
 
     if (this.style.showMarks) {
-        var numberOfMarks = this.selection.size.x - this.selection.position.x;
-        var scale = this.size.x / this.selection.size.x;
+        var numberOfMarks;
+        var scale;
         var mark;
+
+        if (this.orientation === Orientation.HORIZONTAL) {
+            numberOfMarks = this.selection.size.x - this.selection.position.x;
+            numberOfMarks = clipNumberOfMarks(numberOfMarks, this.size.x, 50);
+            scale = this.size.x / numberOfMarks;
+        } else if (this.orientation === Orientation.VERTICAL){
+            numberOfMarks = this.selection.size.y - this.selection.position.y;
+            numberOfMarks = clipNumberOfMarks(numberOfMarks, this.size.y, 50);
+            scale = this.size.y / numberOfMarks;
+        } else {
+            return;
+        }
+
         for (var i=0; i <= numberOfMarks; i=i+this.axisScale.markStride){
-            console.log(i);
             mark = document.createElement('div');
             mark.style.position = 'absolute';
             mark.style.left = i * scale + 'px';

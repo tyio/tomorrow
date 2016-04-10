@@ -50,7 +50,6 @@ ChannelGL.prototype.paintPoint = function ( x, y ) {
     var i = c*3;
     paintArray[i] = x;
     paintArray[i+1] = y;
-    console.log(x,y);
 };
 
 ChannelGL.prototype.paintFinish = function () {

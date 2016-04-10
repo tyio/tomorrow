@@ -40,7 +40,11 @@ var AxisView = function (options) {
     this.orientation = options.orientation !== undefined ? options.orientation : Orientation.HORIZONTAL;
 
     this.el.style.width = this.size.x + 'px';
-
+    if (this.orientation === Orientation.HORIZONTAL) {
+        this.el.classList.add(Orientation.HORIZONTAL);
+    } else if (this.orientation === Orientation.VERTICAL) {
+        this.el.classList.add(Orientation.VERTICAL);
+    }
     this.axisScaleViews.forEach(this.addAxisScaleView, this);
 };
 
