@@ -1,0 +1,4 @@
+var AxisScale = function () {
+
+};
+
