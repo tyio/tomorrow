@@ -12,7 +12,6 @@ var ChannelStyle = require( './view/ChannelStyle');
 var GridView = require( './view/GridView');
 var AxisView = require( './view/AxisView');
 var AxisScaleView = require( './view/AxisScaleView');
-var AxisScaleStyle = require( './view/AxisScaleStyle');
 
 var time = new Channel();
 time.name = 'time';
@@ -51,11 +50,11 @@ temperatureAxisScale.markStride = 1;
 temperatureAxisScale.markStrideSkip = 0;
 temperatureAxisScale.markStrideFill = 0;
 
-var horizontalAxis = new Axis();
-horizontalAxis.addScale(timeAxisScale);
+var timeAxis = new Axis();
+timeAxis.addScale(timeAxisScale);
 
-var verticalAxis = new Axis();
-verticalAxis.addScale(temperatureAxisScale);
+var temperatureAxis = new Axis();
+temperatureAxis.addScale(temperatureAxisScale);
 
 var grid = new Grid();
 grid.addXAxisScale(timeAxisScale);
@@ -74,10 +73,22 @@ var chartCanvas = new ChartCanvas();
 chartCanvas.dataFrame = dataFrame;
 chartCanvas.channelViews.push(channelView);
 
-var axisScaleStyle = new AxisScaleStyle();
-axisScaleStyle
+var timeAxisScaleView = new AxisScaleView({
+    axisScale: timeAxisScale
+});
+var timeAxisView = new AxisView({
+    axis: timeAxis,
+    axisScaleViews: [timeAxisScaleView]
+});
 
-var horizontalAxisView = new AxisView();
+var temperatureAxisScaleView = new AxisScaleView({
+    axisScale: temperatureAxisScale
+});
+
+var temperatureAxisView = new AxisView({
+    axis: temperatureAxis,
+    axisScaleViews: [temperatureAxisScaleView]
+});
 
 var gridView = new GridView();
 gridView.grid = grid;
@@ -85,3 +96,6 @@ gridView.grid = grid;
 var chart = new Chart();
 chart.chartCanvas = chartCanvas;
 chart.gridView = gridView;
+chart.addXAxisView(timeAxisView);
+chart.addYAxisView(temperatureAxisView);
+

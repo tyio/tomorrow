@@ -1,18 +1,20 @@
+var AxisScaleStyle = require( './view/AxisScaleStyle');
+
 /**
  *
  * @constructor
  */
-var AxisScaleView = function () {
+var AxisScaleView = function (options) {
     /**
      *
      * @type {null}
      */
-    this.model = null;
+    this.axisScale = options.axisScale === undefined ? options.axisScale : null;
     /**
      *
      * @type {null}
      */
-    this.style = null;
+    this.style = options.style === undefined ? options.style : new AxisScaleStyle();
 };
 
 module.exports = AxisScaleView;

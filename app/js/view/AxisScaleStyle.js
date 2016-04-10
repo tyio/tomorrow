@@ -7,22 +7,22 @@ var AxisScaleStyle = function () {
      *
      * @type {boolean}
      */
-    this.showUnits = false;
+    this.showUnits = true;
     /**
      *
      * @type {boolean}
      */
-    this.showValues = false;
+    this.showValues = true;
     /**
      *
      * @type {boolean}
      */
-    this.showMarks = false;
+    this.showMarks = true;
     /**
      *
      * @type {boolean}
      */
-    this.showName = false;
+    this.showName = true;
 };
 
 module.exports = AxisScaleStyle;

@@ -2,17 +2,17 @@
  *
  * @constructor
  */
-var AxisView = function () {
+var AxisView = function (options) {
     /**
      *
      * @type {null}
      */
-    this.axis = null;
+    this.axis = options.axis === undefined ? options.axis : null;
     /**
      *
      * @type {Array}
      */
-    this.children = [];
+    this.axisScaleViews = typeof options.axisScaleViews == 'array' ? options.axisScaleViews : [];
 };
 
 module.exports = AxisView;
