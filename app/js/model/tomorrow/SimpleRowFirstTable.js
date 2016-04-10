@@ -5,10 +5,12 @@ var SimpleRowFirstTable = function () {
     this.types = [];
 
     this.data= [];
+    this.length = 0;
 };
 
 SimpleRowFirstTable.prototype.addRow = function ( values ) {
     this.data.push(values);
+    this.length++;
 };
 
 SimpleRowFirstTable.prototype.getRow = function ( index, result ) {
