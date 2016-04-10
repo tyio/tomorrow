@@ -2,11 +2,6 @@
  * Created by goa1yok on 5/11/2014.
  */
 
-
-
-
-
-
 var BVH = function () {
     "use strict";
     var self = this;

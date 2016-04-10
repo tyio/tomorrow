@@ -2,7 +2,6 @@
  * Created by Alex on 11/02/14.
  */
 
-
 "use strict";
 function timeInSeconds() {
     return Date.now()/1000;
