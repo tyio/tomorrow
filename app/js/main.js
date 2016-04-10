@@ -1,30 +1,62 @@
+var DataType = require( './model/tomorrow/DataType');
 var Channel = require( './model/tomorrow/Channel');
 var DataFrame = require( './model/tomorrow/DataFrame');
+var Grid = require( './model/tomorrow/Grid');
+var Axis = require( './model/tomorrow/Axis');
+var AxisScale = require( './model/tomorrow/AxisScale');
 
 var Chart = require( './view/Chart');
 var ChartCanvas = require( './view/ChartCanvas');
 var ChannelView = require( './view/ChannelView');
 var ChannelStyle = require( './view/ChannelStyle');
 
+var time = new Channel();
+time.name = 'time';
+time.unit = 's';
+time.dataType = DataType.Int8;
 
-var channel = new Channel();
-channel.name = 'a';
-channel.unit = 's';
-channel.dataType = 'int';
+var temperature = new Channel();
+temperature.name = 'temperature';
+temperature.unit = 'C';
+temperature.dataType = DataType.Int8;
 
 var dataFrame = new DataFrame();
-dataFrame.addChannel(channel);
-var masterChannel = dataFrame.setMasterChannel(channel.id);
+dataFrame.addChannel(time);
+dataFrame.addChannel(temperature);
+var masterChannel = dataFrame.setMasterChannel(time.id);
 
-dataFrame.data.addRow([0]);
-dataFrame.data.addRow([1]);
-dataFrame.data.addRow([2]);
-dataFrame.data.addRow([3]);
-dataFrame.data.addRow([4]);
-dataFrame.data.addRow([5]);
+dataFrame.data.addRow([0, 10]);
+dataFrame.data.addRow([1, 20]);
+dataFrame.data.addRow([2, 10]);
+dataFrame.data.addRow([3, 20]);
+dataFrame.data.addRow([4, 10]);
+
+var timeAxisScale = new AxisScale();
+timeAxisScale.name = time.name;
+timeAxisScale.units = time.unit;
+timeAxisScale.markOffset = 1;
+timeAxisScale.markStride = 1;
+timeAxisScale.markStrideSkip = 0;
+timeAxisScale.markStrideFill = 0;
+
+var temperatureAxisScale = new AxisScale();
+temperatureAxisScale.name = temperature.name;
+temperatureAxisScale.units = temperature.unit;
+temperatureAxisScale.markOffset = 1;
+temperatureAxisScale.markStride = 1;
+temperatureAxisScale.markStrideSkip = 0;
+temperatureAxisScale.markStrideFill = 0;
+
+var horizontalAxis = new Axis();
+horizontalAxis.scales.push(timeAxisScale);
+
+var verticalAxis = new Axis();
+verticalAxis.scales.push(temperatureAxisScale);
+
+var grid = new Grid();
 
 var channelView = new ChannelView();
-channelView.channel = channel;
+channelView.channel = time;
 channelView.style = new ChannelStyle();
 channelView.style.thickness = 1;
 channelView.style.lineStyle = 'solid';

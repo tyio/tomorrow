@@ -1,3 +1,5 @@
+var SimpleRowFirstTable = require('./SimpleRowFirstTable');
+
 /**
  *
  * @constructor
@@ -12,7 +14,7 @@ var DataFrame = function () {
      *
      * @type {Array}
      */
-    this.data = new RowFirstTable();
+    this.data = new SimpleRowFirstTable();
     /**
      *
      * @type {Channel}

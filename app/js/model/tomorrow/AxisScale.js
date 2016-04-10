@@ -12,7 +12,7 @@ var AxisScale = function () {
      *
      * @type {Array}
      */
-    this.units = [];
+    this.unit = '';
     /**
      *
      * @type {null}

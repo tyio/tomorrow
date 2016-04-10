@@ -1,4 +1,9 @@
 var uuid = require('../core/uuid');
+
+/**
+ *
+ * @constructor
+ */
 var Channel = function Channel() {
     /**
      *
