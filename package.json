@@ -1,0 +1,53 @@
+{
+  "name": "liminality-client",
+  "description": "Client for liminality game, node is used to run http server for it only",
+  "devDependencies": {
+    "browser": "*",
+    "gulp": "*",
+    "gulp-cached": "*",
+    "gulp-concat": "*",
+    "gulp-connect": "*",
+    "gulp-footer": "*",
+    "gulp-header": "*",
+    "gulp-notify": "*",
+    "gulp-react": "*",
+    "gulp-remember": "*",
+    "gulp-sourcemaps": "*",
+    "gulp-uglify": "*",
+    "gulp-util": "*",
+    "node-notifier": "*",
+    "vinyl-buffer": "*",
+    "vinyl-source-stream": "*",
+    "watchify": "*",
+    "browserify": "*",
+    "browserify-shim": "*"
+  },
+  "browser": {
+    "THREE": "./app/lib/three.js",
+    "Hammer": "./app/lib/hammer.min.js",
+    "SPE": "./app/lib/ShaderParticles.js"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "THREE": {
+      "exports": "THREE"
+    },
+    "SPE": {
+      "exports": "SPE",
+      "depends": [
+        "THREE:THREE"
+      ]
+    },
+    "Hammer": {
+      "exports": "Hammer"
+    }
+  },
+  "dependencies": {
+    "react": "~0.14.7",
+    "react-dom": "~0.14.7"
+  }
+}
