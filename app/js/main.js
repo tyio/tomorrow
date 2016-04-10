@@ -12,6 +12,7 @@ var ChannelStyle = require( './view/ChannelStyle');
 var GridView = require( './view/GridView');
 var AxisView = require( './view/AxisView');
 var AxisScaleView = require( './view/AxisScaleView');
+var AxisScaleStyle = require( './view/AxisScaleStyle');
 
 var time = new Channel();
 time.name = 'time';
@@ -26,7 +27,7 @@ temperature.dataType = DataType.Int8;
 var dataFrame = new DataFrame();
 dataFrame.addChannel(time);
 dataFrame.addChannel(temperature);
-var masterChannel = dataFrame.setMasterChannel(time.id);
+dataFrame.setMasterChannel(time);
 
 dataFrame.data.addRow([0, 10]);
 dataFrame.data.addRow([1, 20]);
@@ -60,6 +61,7 @@ var grid = new Grid();
 grid.addXAxisScale(timeAxisScale);
 grid.addYAxisScale(temperatureAxisScale);
 
+/////////////////////////////////////////////
 var channelView = new ChannelView();
 channelView.channel = time;
 channelView.style = new ChannelStyle();
@@ -71,6 +73,8 @@ channelView.style.color = '#800080';
 var chartCanvas = new ChartCanvas();
 chartCanvas.dataFrame = dataFrame;
 chartCanvas.channelViews.push(channelView);
+
+var axisScale
 
 var horizontalAxisView = new AxisView();
 
