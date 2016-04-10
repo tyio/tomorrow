@@ -74,6 +74,7 @@ DataFrame.prototype.setMasterChannel = function ( channel ) {
     }
 };
 
+//FIXME this code is wrong and need to be rewritten
 DataFrame.prototype.findLowRecordIndexByMasterValue = function ( v ) {
     var minIndex = 0;
     var data = this.data;
@@ -101,6 +102,38 @@ DataFrame.prototype.findLowRecordIndexByMasterValue = function ( v ) {
             break;
         }
     }
-    return currentIndex;
+    return minIndex;
 };
+
+//FIXME this code is wrong and need to be rewritten
+DataFrame.prototype.findHighRecordIndexByMasterValue = function ( v ) {
+    var minIndex = 0;
+    var data = this.data;
+    var maxIndex = data.length - 1;
+    var currentIndex;
+
+    var masterValueIndex = this.getValueIndexByChannel( this.masterChannel );
+    var record = [];
+
+    while (minIndex <= maxIndex) {
+        currentIndex = (minIndex + maxIndex) >> 1;
+
+        data.getRow( currentIndex, record );
+
+        var cmp = v - record[ masterValueIndex ];
+
+        if ( cmp > 0 ) {
+            minIndex = currentIndex + 1;
+        }
+        else if ( cmp < 0 ) {
+            maxIndex = currentIndex - 1;
+        }
+        else {
+            //set low boundary for next step based on assumption that upper bound is higher than lower bound
+            break;
+        }
+    }
+    return maxIndex;
+};
+
 module.exports = DataFrame;
