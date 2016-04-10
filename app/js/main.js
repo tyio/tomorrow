@@ -19,21 +19,27 @@ var AxisScaleView = require( './view/AxisScaleView');
 var time = new Channel();
 time.name = 'time';
 time.unit = 's';
-time.dataType = DataType.Int8;
+time.dataType = DataType.Float32;
 
 var temperature = new Channel();
 temperature.name = 'temperature';
 temperature.unit = 'C';
 temperature.dataType = DataType.Int8;
 
-var dataFrame = new DataFrame();
-dataFrame.addChannel(time);
-dataFrame.addChannel(temperature);
-dataFrame.setMasterChannel(time);
+var dataFrame = new DataFrame([time,temperature], time);
 
-for (var i = 0; i < 1000; i++) {
-    dataFrame.data.addRow([i, Math.random() * 10]);
+function generateData( numSamples, table ) {
+    console.time("generateData");
+    var row = [];
+    for (var i = 0; i < numSamples; i++) {
+        row[0] = i/100;
+        row[1] = Math.random()*10;
+        table.addRow(row);
+    }
+    console.timeEnd("generateData");
 }
+
+generateData(1000000, dataFrame.data);
 
 var timeAxisScale = new AxisScale();
 timeAxisScale.name = time.name;

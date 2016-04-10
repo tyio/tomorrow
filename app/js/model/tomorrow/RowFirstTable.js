@@ -48,7 +48,7 @@ function genRowReader( types ) {
     var lines = [];
     for ( var i = 0; i < types.length; i++ ) {
         var type = types[ i ];
-        lines.push( "result["+i+"] = dataView." + DataViewReaders[ type ] + "(" + offset + " + byteOffset);" );
+        lines.push( "result[" + i + "] = dataView." + DataViewReaders[ type ] + "(" + offset + " + byteOffset);" );
         offset += ByteSizeMap[ type ];
     }
 
@@ -100,12 +100,30 @@ RowFirstTable.prototype.generateIO = function () {
 RowFirstTable.prototype.setActualSize = function ( rowCount ) {
     var oldData = this.data;
 
-    this.data = new ArrayBuffer( rowCount * this.bytesPerRecord );
+    var byteSize = rowCount * this.bytesPerRecord;
+    try {
+        this.data = new ArrayBuffer( byteSize );
+    } catch (e) {
+        throw new Error( "failed to create a new array buffer of size: " + byteSize );
+    }
+
+    //check the size of new array
+    if ( this.data.byteLength !== byteSize ) {
+        throw new Error( "Generated array was truncated unexpectedly from " + byteSize + " to " + this.data.byteLength );
+    }
 
     var newArray = new Uint8Array( this.data );
     var oldArray = new Uint8Array( oldData );
 
-    newArray.set( oldArray, 0 );
+    try {
+        newArray.set( oldArray, 0 );
+    }catch(e){
+        if(e instanceof RangeError){
+            throw new Error("Failed to copy contents of original due to to size violation. OldSize: "+oldData.byteLength+", NewSize: "+this.data.byteLength);
+        }else{
+            throw e;
+        }
+    }
 
     this.rowsAvailable = rowCount;
 
@@ -115,10 +133,10 @@ RowFirstTable.prototype.setActualSize = function ( rowCount ) {
 RowFirstTable.prototype.resize = function ( rowCount ) {
     if ( this.rowsAvailable < rowCount ) {
         //grow
-        var growFactor = 1.2;
-        var newSize = rowCount * growFactor;
+        var growFactor = 1.5;
+        var newSize = Math.ceil(rowCount * growFactor);
         this.setActualSize( newSize );
-    } else if ( this.rowsAvailable * 0.7 > rowCount ) {
+    } else if ( this.rowsAvailable * 0.5 > rowCount ) {
         //shrink
         this.setActualSize( rowCount );
     }

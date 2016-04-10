@@ -9,7 +9,7 @@ var SimpleRowFirstTable = function () {
 };
 
 SimpleRowFirstTable.prototype.addRow = function ( values ) {
-    this.data.push(values);
+    this.data.push(values.slice());
     this.length++;
 };
 
