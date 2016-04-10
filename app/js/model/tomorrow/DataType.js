@@ -3,6 +3,10 @@
  */
 'use strict';
 
+/**
+ * @readonly
+ * @enum {string}
+ */
 var DataType = {
     "Uint8" : "uint8",
     "Uint16" : "uint16",

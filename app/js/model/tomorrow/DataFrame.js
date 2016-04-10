@@ -1,33 +1,29 @@
-var SimpleRowFirstTable = require( './SimpleRowFirstTable' );
+var RowFirstTable = require( './RowFirstTable' );
 
 /**
- *
+ * Schema is immutable. Once DataFrame is created, it can not be changed without creating a new data frame.
  * @constructor
  */
-var DataFrame = function () {
+var DataFrame = function (channels, masterChannel) {
     /**
      *
      * @type {Array.<Channel>}
      */
-    this.channels = [];
+    this.channels =  channels;
+
     /**
      *
      * @type {Array}
      */
-    this.data = new SimpleRowFirstTable();
+    this.data = new RowFirstTable(channels.map(function ( c ) {
+        return c.dataType;
+    }));
+
     /**
      *
      * @type {Channel}
      */
-    this.masterChannel = null;
-};
-
-/**
- *
- * @param {Channel} channel
- */
-DataFrame.prototype.addChannel = function ( channel ) {
-    this.channels.push( channel );
+    this.masterChannel = masterChannel;
 };
 
 /**
@@ -44,34 +40,6 @@ DataFrame.prototype.getValueIndexByChannel = function ( channel ) {
     }
 
     return -1;
-};
-
-/**
- *
- * @param {Channel} channel to remove
- * @returns {Channel}
- */
-DataFrame.prototype.removeChannel = function ( channel ) {
-    var i = this.getValueIndexByChannel( channel );
-
-    if ( i != -1 ) {
-        this.channels.splice( i, 1 );
-        return channel;
-    }
-};
-
-/**
- *
- * @param {Channel} channel to set as a master
- * @returns {Channel}
- */
-DataFrame.prototype.setMasterChannel = function ( channel ) {
-    var i = this.getValueIndexByChannel( channel );
-
-    if ( i != -1 ) {
-        this.masterChannel = channel;
-        return channel;
-    }
 };
 
 //FIXME this code is wrong and need to be rewritten
