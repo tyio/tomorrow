@@ -5,6 +5,7 @@ var Grid = require( './model/tomorrow/Grid');
 var Axis = require( './model/tomorrow/Axis');
 var AxisScale = require( './model/tomorrow/AxisScale');
 var Rectangle = require( './model/core/geom/Rectangle');
+var Vector2 = require( './model/core/geom/Vector2');
 
 var Chart = require( './view/Chart');
 var ChartCanvas = require( './view/ChartCanvas');
@@ -63,14 +64,16 @@ grid.addYAxisScale(temperatureAxisScale);
 
 /////////////////////////////////////////////
 var channelView = new ChannelView();
-channelView.channel = time;
+channelView.channel = temperature;
 channelView.style = new ChannelStyle();
 channelView.style.thickness = 1;
 channelView.style.lineStyle = 'solid';
 channelView.style.color = '#800080';
-channelView.style.color = '#800080';
 
+var selection = new Rectangle(0, 0, 10, 10);
 var chartCanvas = new ChartCanvas({
+    size: new Vector2(800, 600),
+    selection: selection,
     dataFrame: dataFrame,
     channelViews: [channelView]
 });
@@ -97,7 +100,7 @@ gridView.grid = grid;
 
 var chart = new Chart();
 chart.gridView = gridView;
-chart.selection = new Rectangle(0, 0, 10, 10);
+chart.selection = selection;
 chart.setChartCanvas(chartCanvas);
 chart.addXAxisView(timeAxisView);
 chart.addYAxisView(temperatureAxisView);
