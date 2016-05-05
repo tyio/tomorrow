@@ -1,4 +1,4 @@
-var Orientation = require( '../model/tomorrow/Orientation');
+var Orientation = require( '../model/tomorrow/axis/Orientation');
 
 /**
  *

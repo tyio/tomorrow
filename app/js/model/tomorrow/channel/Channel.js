@@ -1,4 +1,4 @@
-var uuid = require('../core/uuid');
+var uuid = require('../../core/uuid');
 
 /**
  *

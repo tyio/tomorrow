@@ -1,20 +1,20 @@
-var DataType = require( './model/tomorrow/DataType');
-var Channel = require( './model/tomorrow/Channel');
-var DataFrame = require( './model/tomorrow/DataFrame');
+var DataType = require( './model/tomorrow/data/DataType');
+var Channel = require( './model/tomorrow/channel/Channel');
+var DataFrame = require( './model/tomorrow/data/DataFrame');
 var Grid = require( './model/tomorrow/Grid');
-var Axis = require( './model/tomorrow/Axis');
-var AxisScale = require( './model/tomorrow/AxisScale');
+var Axis = require( './model/tomorrow/axis/Axis');
+var AxisScale = require( './model/tomorrow/axis/AxisScale');
 var Rectangle = require( './model/core/geom/Rectangle');
 var Vector2 = require( './model/core/geom/Vector2');
-var Orientation = require( './model/tomorrow/Orientation');
+var Orientation = require( './model/tomorrow/axis/Orientation');
 
 var Chart = require( './view/Chart');
 var ChartCanvas = require( './view/ChartCanvas');
 var ChannelView = require( './view/ChannelView');
 var ChannelStyle = require( './view/ChannelStyle');
 var GridView = require( './view/GridView');
-var AxisView = require( './view/AxisView');
-var AxisScaleView = require( './view/AxisScaleView');
+var AxisView = require( './view/axis/AxisView');
+var AxisScaleView = require( './view/axis/AxisScaleView');
 
 var time = new Channel();
 time.name = 'time';
@@ -39,7 +39,7 @@ function generateData( numSamples, table ) {
     console.timeEnd("generateData");
 }
 
-generateData(1000000, dataFrame.data);
+generateData(100, dataFrame.data);
 
 var timeAxisScale = new AxisScale();
 timeAxisScale.name = time.name;
@@ -75,7 +75,7 @@ channelView.style.thickness = 1;
 channelView.style.lineStyle = 'solid';
 channelView.style.color = '#800080';
 
-var selection = new Rectangle(0, 0, 1000, 10);
+var selection = new Rectangle(0, 0, 1, 10);
 var size = new Vector2(800, 600);
 
 var chartCanvas = new ChartCanvas({

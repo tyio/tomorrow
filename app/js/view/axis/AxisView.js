@@ -1,5 +1,5 @@
-var Vector2 = require( '../model/core/geom/Vector2' );
-var Orientation = require( '../model/tomorrow/Orientation' );
+var Vector2 = require( '../../model/core/geom/Vector2' );
+var Orientation = require( '../../model/tomorrow/axis/Orientation' );
 
 /**
  *
