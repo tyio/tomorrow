@@ -23,6 +23,8 @@ var Orientation = require( './axis/Orientation' );
 
 var ColorUtils = require( '../core/ColorUtils' );
 
+var InteractionController = require( '../input/InteractionController' );
+
 var GraphBuilder = function () {
     this.selection = new Rectangle( 0, 0, 1, 10 );
     this.size = new Vector2( 800, 600 );
@@ -98,6 +100,22 @@ function buildAxis( channel ) {
     return axis;
 }
 
+function registerInteractions( chart ) {
+    var chartCanvas = chart.chartCanvas;
+    var ic = new InteractionController( chartCanvas.el );
+    ic.pointer.on.drag.add( function ( position, origin, delta ) {
+        var size = chartCanvas.size;
+        var selection = chartCanvas.selection;
+
+        var scale = selection.size.clone().divide( size );
+
+        var selectionDelta = delta.clone().multiply( scale );
+        selectionDelta.x = -selectionDelta.x;
+
+        selection.position.add( selectionDelta );
+    } );
+}
+
 /**
  *
  * @param {DataFrame} dataFrame
@@ -159,6 +177,8 @@ GraphBuilder.prototype.build = function ( dataFrame ) {
 
     chart.addAxisView( av0 );
     chart.addAxisView( av1 );
+
+    registerInteractions( chart );
 
     return chart;
 };
