@@ -6,15 +6,17 @@ var Signal = require( './../Signal' );
 var ObservedValue = function ( v ) {
     var value = v;
     var onChanged = this.onChanged = new Signal();
-    Object.defineProperties(this, {
+    Object.defineProperties( this, {
         value : {
             get : function () {
                 return value;
             },
             set : function ( v ) {
-                var oldValue = value;
-                value = v;
-                onChanged.dispatch( v, oldValue );
+                if ( v !== value ) {
+                    var oldValue = value;
+                    value = v;
+                    onChanged.dispatch( v, oldValue );
+                }
             }
         }
     } )
