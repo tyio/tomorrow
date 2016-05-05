@@ -28,11 +28,25 @@ var GraphBuilder = function () {
     this.size = new Vector2( 800, 600 );
 };
 
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {GraphBuilder}
+ */
 GraphBuilder.prototype.setSize = function ( x, y ) {
     this.size.set( x, y );
     return this;
 };
 
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} width
+ * @param {number} height
+ * @returns {GraphBuilder}
+ */
 GraphBuilder.prototype.setSelection = function ( x, y, width, height ) {
     this.selection.set( x, y, width, height );
     return this;
