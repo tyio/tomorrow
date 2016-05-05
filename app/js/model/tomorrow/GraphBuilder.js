@@ -92,8 +92,11 @@ function buildAxis( channel ) {
 GraphBuilder.prototype.build = function ( dataFrame ) {
     var channels = dataFrame.channels;
 
-    var channelViews = channels.map( function ( channel, index ) {
-        var hue = index/(channels.length);
+    var channelViews = channels.filter( function ( channel ) {
+        //filter out master channel. We don't want to display it.
+        return channel !== dataFrame.masterChannel;
+    } ).map( function ( channel, index ) {
+        var hue = index / (channels.length);
         var color = ColorUtils.hsv2rgb( hue, 0.7, 0.9 );
 
         var channelView = new ChannelView();
@@ -119,7 +122,7 @@ GraphBuilder.prototype.build = function ( dataFrame ) {
     }
 
     //build axis
-    var c0 = channels[ 0 ];
+    var c0 = dataFrame.masterChannel;
     var c1 = channels[ 1 ];
 
     var a0 = buildAxis( c0 );
