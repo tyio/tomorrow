@@ -117,10 +117,10 @@ RowFirstTable.prototype.setActualSize = function ( rowCount ) {
 
     try {
         newArray.set( oldArray, 0 );
-    }catch(e){
-        if(e instanceof RangeError){
-            throw new Error("Failed to copy contents of original due to to size violation. OldSize: "+oldData.byteLength+", NewSize: "+this.data.byteLength);
-        }else{
+    } catch (e) {
+        if ( e instanceof RangeError ) {
+            throw new Error( "Failed to copy contents of original due to to size violation. OldSize: " + oldData.byteLength + ", NewSize: " + this.data.byteLength );
+        } else {
             throw e;
         }
     }
@@ -134,7 +134,7 @@ RowFirstTable.prototype.resize = function ( rowCount ) {
     if ( this.rowsAvailable < rowCount ) {
         //grow
         var growFactor = 1.5;
-        var newSize = Math.ceil(rowCount * growFactor);
+        var newSize = Math.ceil( rowCount * growFactor );
         this.setActualSize( newSize );
     } else if ( this.rowsAvailable * 0.5 > rowCount ) {
         //shrink
@@ -168,5 +168,26 @@ RowFirstTable.prototype.addRow = function ( values ) {
 RowFirstTable.prototype.getRow = function ( index, result ) {
     this.readRowMethod( this.dataView, this.bytesPerRecord * index, result );
 };
+/**
+ * @param {int} rowIndex
+ * @param {int} valueIndex
+ * @returns {number}
+ */
+RowFirstTable.prototype.getRowValue = function () {
+    var row = [];
+
+    /**
+     *
+     * @param {int} rowIndex
+     * @param {int} valueIndex
+     * @returns {number}
+     */
+    function getRowValue( rowIndex, valueIndex ) {
+        this.getRow( rowIndex, row );
+        return row[ valueIndex ];
+    }
+
+    return getRowValue;
+}();
 
 module.exports = RowFirstTable;
