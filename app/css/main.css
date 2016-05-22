@@ -1,23 +1,48 @@
 .chart {
     position: relative;
-    margin-left: 30px;
+    display: inline-block;
+    font-family: 'Questrial', sans-serif;
 }
+
+canvas {
+    display: block;
+}
+
 .axis.horizontal {
-    position: absolute;
-    text-align: right;
+    border-top: black 1px solid;
 }
+
 .axis.vertical {
+    border-right: black 1px solid;
+}
+
+.axis .marks .mark {
     position: absolute;
-    top: 0;
-}
-
-.axis.vertical .axis-scale {
-    transform: rotate(90deg);
-    transform-origin: top left 0;
-}
-
-.axis-scale div {
     background-color: black;
+}
+
+.axis .marks .mark.vertical{
+    height: 1px;
+    width: 10px;
+    right: 0;
+}
+
+.axis .marks .mark.horizontal{
     height: 10px;
     width: 1px;
+}
+
+.axis .marks .mark .label{
+    position: absolute;
+    font-size: 12px;
+}
+
+.axis .marks .mark.vertical .label{
+    right: 15px;
+    transform: translate(0, -50%);
+}
+
+.axis .marks .mark.horizontal .label{
+    top: 15px;
+    transform: translate(-50%, 0);
 }

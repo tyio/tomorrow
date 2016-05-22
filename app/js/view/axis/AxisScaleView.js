@@ -43,16 +43,19 @@ var AxisScaleView = function (options) {
      */
     this.orientation = options.orientation !== undefined ? options.orientation : Orientation.HORIZONTAL;
 
-    this.drawAxisScale();
+    /**
+     *
+     * @type {null}
+     */
+    this.marks = null;
 
+    this.drawAxisScale();
 };
 
+/**
+ *
+ */
 AxisScaleView.prototype.drawAxisScale = function () {
-
-    function clipNumberOfMarks(numberOfMarks, totalSpace, minSpacing) {
-        var maxMarks = Math.floor(totalSpace/minSpacing);
-        return Math.min(maxMarks, numberOfMarks);
-    }
 
     if (!this.axisScale) {
         return;
@@ -61,7 +64,37 @@ AxisScaleView.prototype.drawAxisScale = function () {
     if (this.style.showMarks) {
         var numberOfMarks;
         var scale;
-        var mark;
+
+        function clipNumberOfMarks(numberOfMarks, totalSpace, minSpacing) {
+            var maxMarks = Math.floor(totalSpace/minSpacing);
+            return Math.min(maxMarks, numberOfMarks);
+        }
+
+        function drawMarks (orientation, offset ) {
+            var markEls = document.createElement('div');
+            markEls.classList.add('marks');
+            var mark;
+            var label;
+            for (var i = 0; i <= numberOfMarks; i= i + offset){
+                mark = document.createElement('div');
+                mark.classList.add('mark');
+                mark.classList.add(orientation);
+
+                if (orientation === Orientation.HORIZONTAL) {
+                    mark.style.left = i * scale + 'px';
+                } else if (orientation === Orientation.VERTICAL){
+                    mark.style.bottom = i * scale + 'px';
+                }
+
+                label = document.createElement('span');
+                label.classList.add('label');
+                label.textContent = i;
+
+                mark.appendChild(label);
+                markEls.appendChild(mark);
+            }
+            return markEls;
+        }
 
         if (this.orientation === Orientation.HORIZONTAL) {
             numberOfMarks = this.selection.size.x - this.selection.position.x;
@@ -75,19 +108,16 @@ AxisScaleView.prototype.drawAxisScale = function () {
             return;
         }
 
-        for (var i=0; i <= numberOfMarks; i=i+this.axisScale.markStride){
-            mark = document.createElement('div');
-            mark.style.position = 'absolute';
-            mark.style.left = i * scale + 'px';
-            this.el.appendChild(mark);
-        }
+        this.marks = drawMarks(this.orientation, this.axisScale.markStride);
+        this.el.appendChild(this.marks);
     }
 
     if (this.style.showName) {
         var nameElement = document.createElement('span');
         nameElement.textContent = this.axisScale.name;
-        this.el.appendChild(nameElement);
+        //this.el.appendChild(nameElement);
     }
 };
+
 
 module.exports = AxisScaleView;

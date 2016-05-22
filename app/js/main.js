@@ -28,12 +28,12 @@ function generateData( numSamples, table ) {
     console.timeEnd( "generateData" );
 }
 
-generateData( 100, dataFrame.data );
+generateData( 1000, dataFrame.data );
 
 var builder = new GraphBuilder();
 
 var chart = builder.setSize( 800, 600 )
-    .setSelection( 0, 0, 1, 10 )
+    .setSelection( 0, 0, 5, 10)
     .build( dataFrame );
 
 document.body.appendChild( chart.el );

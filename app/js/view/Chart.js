@@ -34,6 +34,8 @@ var Chart = function () {
         x: [],
         y: []
     }
+
+    this.size = null;
 };
 
 /**
@@ -41,7 +43,19 @@ var Chart = function () {
  * @param [AxisView} axis view to add
  */
 Chart.prototype.addAxisView = function (axisView) {
-    this.axisViews.y.push(axisView);
+    var margin;
+    if (axisView.orientation === Orientation.HORIZONTAL) {
+        this.axisViews.x.push(axisView);
+
+        margin = parseFloat(this.chartCanvas.el.style.marginBottom) || 0;
+        this.chartCanvas.el.style.marginBottom = margin + 50 + 'px';
+    } else if (axisView.orientation === Orientation.VERTICAL) {
+        this.axisViews.y.push(axisView);
+
+        margin = parseFloat(this.chartCanvas.el.style.marginLeft) || 0;
+        this.chartCanvas.el.style.marginLeft = margin + 50 + 'px';
+    }
+
     this.el.appendChild(axisView.el);
 };
 
