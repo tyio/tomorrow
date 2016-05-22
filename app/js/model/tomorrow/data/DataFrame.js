@@ -2,22 +2,25 @@ var RowFirstTable = require( './RowFirstTable' );
 
 /**
  * Schema is immutable. Once DataFrame is created, it can not be changed without creating a new data frame.
+ * @property {RowFirstTable} data
+ * @property {Array.<Channel>} channels
+ * @property {Channel} masterChannel
  * @constructor
  */
-var DataFrame = function (channels, masterChannel) {
+var DataFrame = function ( channels, masterChannel ) {
     /**
      *
      * @type {Array.<Channel>}
      */
-    this.channels =  channels;
+    this.channels = channels;
 
     /**
      *
      * @type {Array}
      */
-    this.data = new RowFirstTable(channels.map(function ( c ) {
+    this.data = new RowFirstTable( channels.map( function ( c ) {
         return c.dataType;
-    }));
+    } ) );
 
     /**
      *
@@ -50,15 +53,14 @@ DataFrame.prototype.findLowRecordIndexByMasterValue = function ( v ) {
     var currentIndex;
 
     var masterValueIndex = this.getValueIndexByChannel( this.masterChannel );
-    var record = [];
 
     while (minIndex <= maxIndex) {
-        currentIndex = (minIndex + maxIndex) >> 1;
+        currentIndex = (minIndex + maxIndex) >>> 1;
 
-        data.getRow( currentIndex, record );
+        var masterValue = data.getRowValue( currentIndex, masterValueIndex );
 
-        var cmp = v - record[ masterValueIndex ];
-        
+        var cmp = v - masterValue;
+
         if ( cmp > 0 ) {
             minIndex = currentIndex + 1;
         }
@@ -81,14 +83,13 @@ DataFrame.prototype.findHighRecordIndexByMasterValue = function ( v ) {
     var currentIndex;
 
     var masterValueIndex = this.getValueIndexByChannel( this.masterChannel );
-    var record = [];
 
     while (minIndex <= maxIndex) {
-        currentIndex = (minIndex + maxIndex) >> 1;
+        currentIndex = (minIndex + maxIndex) >>> 1;
 
-        data.getRow( currentIndex, record );
+        var masterValue = data.getRowValue( currentIndex, masterValueIndex );
 
-        var cmp = v - record[ masterValueIndex ];
+        var cmp = v - masterValue;
 
         if ( cmp > 0 ) {
             minIndex = currentIndex + 1;
@@ -101,7 +102,7 @@ DataFrame.prototype.findHighRecordIndexByMasterValue = function ( v ) {
             break;
         }
     }
-    return maxIndex;
+    return currentIndex;
 };
 
 module.exports = DataFrame;

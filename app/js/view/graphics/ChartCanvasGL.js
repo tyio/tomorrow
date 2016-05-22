@@ -5,14 +5,16 @@
 
 var THREE = require( 'THREE' );
 var ChannelGL = require( './ChannelGL' );
+var UniformSampler = require( '../../model/tomorrow/data/transform/UniformSampler' );
 
 var ChartCanvasGL = function ( view ) {
+    this.sampler = new UniformSampler();
     this.view = view;
     this.channels = [];
 
     this.scene = new THREE.Scene();
 
-    this.camera = new THREE.OrthographicCamera( -1 / 2, 1 / 2, 1 / 2. - 1 / 2, 1, 100 );
+    this.camera = new THREE.OrthographicCamera( -1 / 2, 1 / 2, 1 / 2, -1 / 2, 1, 100 );
     this.camera.position.set( 0, 0, 0 );
     this.camera.lookAt( new THREE.Vector3( 0, 0, 1 ) );
 
@@ -21,11 +23,11 @@ var ChartCanvasGL = function ( view ) {
 
     renderer.setClearColor( 0, 0 );
 
-    function handleViewSizeChange(  ) {
+    function handleViewSizeChange() {
         renderer.setSize( view.size.x, view.size.y );
     }
-    
-    view.size.onChanged.add(handleViewSizeChange);
+
+    view.size.onChanged.add( handleViewSizeChange );
     handleViewSizeChange();
 
     var channelViews = view.channelViews;
@@ -87,6 +89,7 @@ ChartCanvasGL.prototype.updateCamera = function () {
     camera.position.set( selection.position.x, selection.position.y, -1 );
 
     camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
 
     this.__cameraNeedsUpdate = false;
     //mark for update
@@ -156,14 +159,18 @@ ChartCanvasGL.prototype.paint = function ( selection ) {
     var lowMasterIndex = dataFrame.findLowRecordIndexByMasterValue( selection.position.x );
     var highMasterIndex = dataFrame.findHighRecordIndexByMasterValue( selection.position.x + selection.size.x );
 
-    var sampleCount = highMasterIndex - lowMasterIndex;
+    var sampler = this.sampler;
+
+    sampler.delta = selection.size.x / (this.view.size.x);
+
+    var sampleCountUpperBound = (selection.size.x / sampler.delta) + 2;
+
     //render
-    paintStart( sampleCount );
-    var record = [];
-    for ( var i = lowMasterIndex; i <= highMasterIndex; i++ ) {
-        dataFrame.data.getRow( i, record );
-        paintSample( record );
-    }
+    paintStart( sampleCountUpperBound );
+    var startValue = selection.position.x;
+    var endValue = selection.position.x + selection.size.x;
+    sampler.traverse( dataFrame, startValue, endValue, paintSample );
+
     paintFinish();
 
     //flag for re-rendering
