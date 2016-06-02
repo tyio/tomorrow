@@ -55,7 +55,14 @@ UniformSampler.prototype.traverse = function ( dataFrame, startValue, endValue, 
         visitor( result );
     }
 
-    for ( var i = startValue; i <= endValue; i += delta ) {
+    //clamp start and end values to max and min of master value
+    var masterMinValue = dataFrame.data.getRowValue(0,masterChannelPosition);
+    var masterMaxValue = dataFrame.data.getRowValue(dataFrame.data.length-1, masterChannelPosition);
+
+    var offset = Math.max(startValue, masterMinValue);
+    var end = Math.min(endValue, masterMaxValue);
+
+    for ( var i = offset; i <= end; i += delta ) {
         sampleLinear( i, record, visitor );
     }
 };
