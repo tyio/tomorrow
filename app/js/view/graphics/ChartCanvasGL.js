@@ -3,37 +3,37 @@
  */
 'use strict';
 
-var THREE = require( 'THREE' );
-var ChannelGL = require( './ChannelGL' );
-var UniformSampler = require( '../../model/tomorrow/data/transform/UniformSampler' );
+var THREE = require('THREE');
+var ChannelGL = require('./ChannelGL');
+var UniformSampler = require('../../model/tomorrow/data/transform/UniformSampler');
 
-var ChartCanvasGL = function ( view ) {
+var ChartCanvasGL = function (view) {
     this.sampler = new UniformSampler();
     this.view = view;
     this.channels = [];
 
     this.scene = new THREE.Scene();
 
-    this.camera = new THREE.OrthographicCamera( -1 / 2, 1 / 2, 1 / 2, -1 / 2, 1, 100 );
-    this.camera.position.set( 0, 0, 0 );
-    this.camera.lookAt( new THREE.Vector3( 0, 0, 1 ) );
+    this.camera = new THREE.OrthographicCamera(-1 / 2, 1 / 2, 1 / 2, -1 / 2, 1, 100);
+    this.camera.position.set(0, 0, 0);
+    this.camera.lookAt(new THREE.Vector3(0, 0, 1));
 
-    var renderer = this.renderer = new THREE.WebGLRenderer( {antialias : true, alpha : true} );
-    renderer.setPixelRatio( window.devicePixelRatio );
+    var renderer = this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
 
-    renderer.setClearColor( 0, 0 );
+    renderer.setClearColor(0, 0);
 
     function handleViewSizeChange() {
-        renderer.setSize( view.size.x, view.size.y );
+        renderer.setSize(view.size.x, view.size.y);
     }
 
-    view.size.onChanged.add( handleViewSizeChange );
+    view.size.onChanged.add(handleViewSizeChange);
     handleViewSizeChange();
 
     var channelViews = view.channelViews;
-    for ( var i = 0; i < channelViews.length; i++ ) {
-        var channelView = channelViews[ i ];
-        this.addChannelView( channelView );
+    for (var i = 0; i < channelViews.length; i++) {
+        var channelView = channelViews.get(i);
+        this.addChannelView(channelView);
     }
 
     this.updateCamera();
@@ -43,18 +43,18 @@ var ChartCanvasGL = function ( view ) {
     function handleSelectionChange() {
         self.__cameraNeedsUpdate = true;
 
-        self.paint( self.view.selection );
+        self.paint(self.view.selection);
         self.render();
     }
 
-    view.selection.position.onChanged.add( handleSelectionChange );
-    view.selection.size.onChanged.add( handleSelectionChange );
+    view.selection.position.onChanged.add(handleSelectionChange);
+    view.selection.size.onChanged.add(handleSelectionChange);
 
     this.el = renderer.domElement;
 
     function updateView() {
         self.render();
-        requestAnimationFrame( updateView );
+        requestAnimationFrame(updateView);
     }
 
     handleSelectionChange();
@@ -86,7 +86,7 @@ ChartCanvasGL.prototype.updateCamera = function () {
     camera.near = 0;
     camera.far = 100;
 
-    camera.position.set( selection.position.x, selection.position.y, -1 );
+    camera.position.set(selection.position.x, selection.position.y, -1);
 
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
@@ -96,18 +96,18 @@ ChartCanvasGL.prototype.updateCamera = function () {
     this.__renderDirty = true;
 };
 
-ChartCanvasGL.prototype.addChannelView = function ( view ) {
-    var channelGL = new ChannelGL( view );
-    this.channels.push( channelGL );
-    this.scene.add( channelGL.mesh );
+ChartCanvasGL.prototype.addChannelView = function (view) {
+    var channelGL = new ChannelGL(view);
+    this.channels.push(channelGL);
+    this.scene.add(channelGL.mesh);
 };
 
 ChartCanvasGL.prototype.render = function () {
-    if ( this.__cameraNeedsUpdate ) {
+    if (this.__cameraNeedsUpdate) {
         this.updateCamera();
     }
-    if ( this.__renderDirty ) {
-        this.renderer.render( this.scene, this.camera );
+    if (this.__renderDirty) {
+        this.renderer.render(this.scene, this.camera);
 
         this.__renderDirty = false;
     }
@@ -117,47 +117,43 @@ ChartCanvasGL.prototype.render = function () {
  *
  * @param {Rectangle} selection
  */
-ChartCanvasGL.prototype.paint = function ( selection ) {
+ChartCanvasGL.prototype.paint = function (selection) {
     var view = this.view;
 
     var dataFrame = view.dataFrame;
     var channelViews = view.channelViews;
 
     //map channel views to record values
-    var channelIndices = channelViews.map( function ( channelView ) {
-        return dataFrame.getValueIndexByChannel( channelView.channel );
-    } );
+    var channelIndices = channelViews.map(function (channelView) {
+        return dataFrame.getValueIndexByChannel(channelView.channel);
+    });
 
     var channels = this.channels;
-    var masterChannelPosition = dataFrame.getValueIndexByChannel( dataFrame.masterChannel );
+    var masterChannelPosition = dataFrame.getValueIndexByChannel(dataFrame.masterChannel);
 
-    function paintSample( record ) {
-        var masterValue = record[ masterChannelPosition ];
-        for ( var i = 0; i < channels.length; i++ ) {
-            var channel = channels[ i ];
-            var channelIndex = channelIndices[ i ];
-            var value = record[ channelIndex ];
-            channel.paintPoint( masterValue, value );
+    function paintSample(record) {
+        var masterValue = record[masterChannelPosition];
+        for (var i = 0; i < channels.length; i++) {
+            var channel = channels[i];
+            var channelIndex = channelIndices[i];
+            var value = record[channelIndex];
+            channel.paintPoint(masterValue, value);
         }
     }
 
-    function paintStart( sampleCount ) {
-        for ( var i = 0, l = channels.length; i < l; i++ ) {
-            var channel = channels[ i ];
-            channel.paintStart( sampleCount );
+    function paintStart(sampleCount) {
+        for (var i = 0, l = channels.length; i < l; i++) {
+            var channel = channels[i];
+            channel.paintStart(sampleCount);
         }
     }
 
     function paintFinish() {
-        for ( var i = 0, l = channels.length; i < l; i++ ) {
-            var channel = channels[ i ];
+        for (var i = 0, l = channels.length; i < l; i++) {
+            var channel = channels[i];
             channel.paintFinish();
         }
     }
-
-    //find first record index for selection
-    var lowMasterIndex = dataFrame.findLowRecordIndexByMasterValue( selection.position.x );
-    var highMasterIndex = dataFrame.findHighRecordIndexByMasterValue( selection.position.x + selection.size.x );
 
     var sampler = this.sampler;
 
@@ -166,10 +162,10 @@ ChartCanvasGL.prototype.paint = function ( selection ) {
     var sampleCountUpperBound = (selection.size.x / sampler.delta) + 2;
 
     //render
-    paintStart( sampleCountUpperBound );
+    paintStart(sampleCountUpperBound);
     var startValue = selection.position.x;
     var endValue = selection.position.x + selection.size.x;
-    sampler.traverse( dataFrame, startValue, endValue, paintSample );
+    sampler.traverse(dataFrame, startValue, endValue, paintSample);
 
     paintFinish();
 
