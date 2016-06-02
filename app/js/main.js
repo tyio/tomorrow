@@ -15,25 +15,28 @@ temperature.name = 'temperature';
 temperature.unit = 'C';
 temperature.dataType = DataType.Int8;
 
-var dataFrame = new DataFrame( [ time, temperature ], time );
+var temperature2 = new Channel();
+temperature2.name = 'temperature2';
+temperature2.unit = 'C';
+temperature2.dataType = DataType.Int8;
+var dataFrame = new DataFrame( [ time, temperature,temperature2 ], time );
 
 function generateData( numSamples, table ) {
     console.time( "generateData" );
-    var row = [];
-    for ( var i = 0; i < numSamples; i++ ) {
+    table.addRows(numSamples,function (i,row) {
         row[ 0 ] = i / 100;
         row[ 1 ] = Math.random() * 10;
-        table.addRow( row );
-    }
+        row[ 2 ] = Math.random() * 6 +5;
+    });
     console.timeEnd( "generateData" );
 }
 
-generateData( 1000, dataFrame.data );
+generateData( 10000000, dataFrame.data );
 
 var builder = new GraphBuilder();
 
-var chart = builder.setSize( 800, 600 )
-    .setSelection( 0, 0, 5, 10)
+var chart = builder.setSize( 950, 600 )
+    .setSelection( 0, 0, 100000, 10)
     .build( dataFrame );
 
 document.body.appendChild( chart.el );
