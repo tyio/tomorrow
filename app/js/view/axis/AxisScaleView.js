@@ -1,6 +1,6 @@
 var AxisScaleStyle = require('./AxisScaleStyle');
 var Vector2 = require('../../model/core/geom/Vector2');
-var Orientation = require( '../../model/tomorrow/axis/Orientation' );
+var Orientation = require('../../model/tomorrow/axis/Orientation');
 
 /**
  *
@@ -50,67 +50,29 @@ var AxisScaleView = function (options) {
     this.marks = null;
 
     this.drawAxisScale();
+
+    var self = this;
+    function handleSelectionChange() {
+        self.eraseAxisScale();
+        self.drawAxisScale();
+    }
+
+    this.selection.position.onChanged.add(handleSelectionChange);
 };
 
 /**
  *
  */
 AxisScaleView.prototype.drawAxisScale = function () {
-
     if (!this.axisScale) {
         return;
     }
 
-    if (this.style.showMarks) {
-        var numberOfMarks;
-        var scale;
-
-        function clipNumberOfMarks(numberOfMarks, totalSpace, minSpacing) {
-            var maxMarks = Math.floor(totalSpace/minSpacing);
-            return Math.min(maxMarks, numberOfMarks);
-        }
-
-        function drawMarks (orientation, offset ) {
-            var markEls = document.createElement('div');
-            markEls.classList.add('marks');
-            var mark;
-            var label;
-            for (var i = 0; i <= numberOfMarks; i= i + offset){
-                mark = document.createElement('div');
-                mark.classList.add('mark');
-                mark.classList.add(orientation);
-
-                if (orientation === Orientation.HORIZONTAL) {
-                    mark.style.left = i * scale + 'px';
-                } else if (orientation === Orientation.VERTICAL){
-                    mark.style.bottom = i * scale + 'px';
-                }
-
-                label = document.createElement('span');
-                label.classList.add('label');
-                label.textContent = i;
-
-                mark.appendChild(label);
-                markEls.appendChild(mark);
-            }
-            return markEls;
-        }
-
-        if (this.orientation === Orientation.HORIZONTAL) {
-            numberOfMarks = this.selection.size.x - this.selection.position.x;
-            numberOfMarks = clipNumberOfMarks(numberOfMarks, this.size.x, 50);
-            scale = this.size.x / numberOfMarks;
-        } else if (this.orientation === Orientation.VERTICAL){
-            numberOfMarks = this.selection.size.y - this.selection.position.y;
-            numberOfMarks = clipNumberOfMarks(numberOfMarks, this.size.y, 50);
-            scale = this.size.y / numberOfMarks;
-        } else {
-            return;
-        }
-
-        this.marks = drawMarks(this.orientation, this.axisScale.markStride);
-        this.el.appendChild(this.marks);
+    if (!this.style.showMarks) {
+        return;
     }
+
+    this.drawMarks();
 
     if (this.style.showName) {
         var nameElement = document.createElement('span');
@@ -119,5 +81,86 @@ AxisScaleView.prototype.drawAxisScale = function () {
     }
 };
 
+AxisScaleView.prototype.drawMarks = function () {
+    var self = this;
+    var scale;
+
+    function createMarkElement(orientation) {
+        var mark = document.createElement('div');
+        mark.classList.add('mark');
+        mark.classList.add(orientation);
+        return mark;
+    }
+
+    function createLabelElement() {
+        var label = document.createElement('span');
+        label.classList.add('label');
+        return label;
+    }
+
+    function draw(orientation) {
+        var mark;
+        var label;
+        var offset;
+        var maxSize;
+        var markPosition;
+        var labelValue;
+        var position;
+        if (orientation === Orientation.HORIZONTAL) {
+            position = self.selection.position.x;
+            maxSize = self.size.x;
+            markPosition = 'left';
+            labelValue = self.selection.position.x;
+        } else if (orientation === Orientation.VERTICAL) {
+            position = self.selection.position.y;
+            maxSize = self.size.y;
+            markPosition = 'bottom';
+            labelValue = self.selection.position.y;
+        }
+
+        if (position > 0){
+            offset = scale * (1 - position % 1);
+        } else if (position < 0) {
+            offset = Math.abs(scale * (position % 1));
+        } else {
+            offset = 0;
+        }
+
+        var markEls = document.createElement('div');
+        markEls.classList.add('marks');
+
+
+        var i = 0;
+        while (offset + i * scale <= maxSize) {
+            mark = createMarkElement(orientation);
+            label = createLabelElement();
+            mark.style[markPosition] = offset + i * scale + 'px';
+            label.textContent = Math.ceil(labelValue + i);
+
+            mark.appendChild(label);
+            markEls.appendChild(mark);
+            i = i + self.axisScale.markStride;
+        }
+
+        return markEls;
+    }
+
+    if (this.orientation === Orientation.HORIZONTAL) {
+        scale = this.size.x / this.selection.size.x;
+    } else if (this.orientation === Orientation.VERTICAL) {
+        scale = this.size.y / this.selection.size.y;
+    } else {
+        return;
+    }
+
+    this.marks = draw(this.orientation);
+    this.el.appendChild(this.marks);
+};
+
+AxisScaleView.prototype.eraseAxisScale = function() {
+    var range = document.createRange();
+    range.selectNodeContents(this.el);
+    range.deleteContents();
+};
 
 module.exports = AxisScaleView;

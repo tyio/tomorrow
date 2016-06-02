@@ -36,7 +36,7 @@ generateData( 10000000, dataFrame.data );
 var builder = new GraphBuilder();
 
 var chart = builder.setSize( 950, 600 )
-    .setSelection( 0, 0, 100000, 10)
+    .setSelection(0, 0, 30, 10)
     .build( dataFrame );
 
 document.body.appendChild( chart.el );
