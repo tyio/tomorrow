@@ -26,9 +26,15 @@ var ColorUtils = require('../core/ColorUtils');
 
 var InteractionController = require('../input/InteractionController');
 
+var AxisRescale = require('../../aspects/axis/AxisRescale');
+
 var GraphBuilder = function () {
     this.selection = new Rectangle(0, 0, 1, 10);
     this.size = new Vector2(800, 600);
+    this.axisRescale = new AxisRescale({
+        size: this.size,
+        selection: this.selection
+    });
 };
 
 /**
@@ -90,7 +96,7 @@ function buildAxis(channel) {
     scale.units = channel.unit;
 
     scale.markOffset = 1;
-    scale.markStride = 1;
+    scale.markStride.value = 1;
     scale.markStrideSkip = 0;
     scale.markStrideFill = 0;
 
@@ -211,6 +217,10 @@ GraphBuilder.prototype.build = function (dataFrame) {
 
     registerInteractions(chart);
 
+    // register aspects
+
+    this.axisRescale.register(a0, Orientation.HORIZONTAL);
+    this.axisRescale.register(a1, Orientation.VERTICAL);
     return chart;
 };
 

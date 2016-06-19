@@ -1,3 +1,5 @@
+var ObservedValue = require('../../core/math/ObservedValue');
+
 /**
  *
  * @constructor
@@ -22,7 +24,7 @@ var AxisScale = function () {
      *
      * @type {null}
      */
-    this.markStride = null;
+    this.markStride = new ObservedValue(1);
     /**
      *
      * @type {null}

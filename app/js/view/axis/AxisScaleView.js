@@ -53,13 +53,14 @@ var AxisScaleView = function (options) {
 
     var self = this;
 
-    function handleSelectionChange() {
+    function redraw() {
         self.eraseAxisScale();
         self.drawAxisScale();
     }
 
-    this.selection.position.onChanged.add(handleSelectionChange);
-    this.selection.size.onChanged.add(handleSelectionChange);
+    this.axisScale.markStride.onChanged.add(redraw);
+    this.selection.position.onChanged.add(redraw);
+    this.selection.size.onChanged.add(redraw);
 };
 
 /**
@@ -87,6 +88,17 @@ AxisScaleView.prototype.drawMarks = function () {
     var self = this;
     var scale;
 
+    if (this.orientation === Orientation.HORIZONTAL) {
+        scale = this.size.x / this.selection.size.x;
+    } else if (this.orientation === Orientation.VERTICAL) {
+        scale = this.size.y / this.selection.size.y;
+    } else {
+        return;
+    }
+
+    this.marks = draw(this.orientation);
+    this.el.appendChild(this.marks);
+
     function createMarkElement(orientation) {
         var mark = document.createElement('div');
 
@@ -112,6 +124,7 @@ AxisScaleView.prototype.drawMarks = function () {
         var markPosition;
         var labelValue;
         var position;
+        var markStride = self.axisScale.markStride.value;
 
         if (orientation === Orientation.HORIZONTAL) {
             position = self.selection.position.x;
@@ -126,9 +139,9 @@ AxisScaleView.prototype.drawMarks = function () {
         }
 
         if (position > 0) {
-            offset = scale * (1 - position % 1);
+            offset = scale * (markStride - position % markStride);
         } else if (position < 0) {
-            offset = Math.abs(scale * (position % 1));
+            offset = Math.abs(scale * (position % markStride));
         } else {
             offset = 0;
         }
@@ -136,13 +149,12 @@ AxisScaleView.prototype.drawMarks = function () {
         var markEls = document.createElement('div');
         markEls.classList.add('marks');
 
-
         var i;
-        for (i = 0; offset + i * scale <= maxSize; i += self.axisScale.markStride) {
+        for (i = 0; offset + i * scale <= maxSize; i += markStride) {
             mark = createMarkElement(orientation);
             label = createLabelElement();
             mark.style[markPosition] = offset + i * scale + 'px';
-            label.textContent = Math.ceil(labelValue + i);
+            label.textContent = Math.ceil((labelValue + i)/markStride) * markStride;
 
             mark.appendChild(label);
             markEls.appendChild(mark);
@@ -150,17 +162,6 @@ AxisScaleView.prototype.drawMarks = function () {
 
         return markEls;
     }
-
-    if (this.orientation === Orientation.HORIZONTAL) {
-        scale = this.size.x / this.selection.size.x;
-    } else if (this.orientation === Orientation.VERTICAL) {
-        scale = this.size.y / this.selection.size.y;
-    } else {
-        return;
-    }
-
-    this.marks = draw(this.orientation);
-    this.el.appendChild(this.marks);
 };
 
 AxisScaleView.prototype.eraseAxisScale = function () {
