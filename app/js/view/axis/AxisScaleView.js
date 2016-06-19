@@ -52,12 +52,14 @@ var AxisScaleView = function (options) {
     this.drawAxisScale();
 
     var self = this;
+
     function handleSelectionChange() {
         self.eraseAxisScale();
         self.drawAxisScale();
     }
 
     this.selection.position.onChanged.add(handleSelectionChange);
+    this.selection.size.onChanged.add(handleSelectionChange);
 };
 
 /**
@@ -87,14 +89,18 @@ AxisScaleView.prototype.drawMarks = function () {
 
     function createMarkElement(orientation) {
         var mark = document.createElement('div');
+
         mark.classList.add('mark');
         mark.classList.add(orientation);
+
         return mark;
     }
 
     function createLabelElement() {
         var label = document.createElement('span');
+
         label.classList.add('label');
+
         return label;
     }
 
@@ -106,6 +112,7 @@ AxisScaleView.prototype.drawMarks = function () {
         var markPosition;
         var labelValue;
         var position;
+
         if (orientation === Orientation.HORIZONTAL) {
             position = self.selection.position.x;
             maxSize = self.size.x;
@@ -118,7 +125,7 @@ AxisScaleView.prototype.drawMarks = function () {
             labelValue = self.selection.position.y;
         }
 
-        if (position > 0){
+        if (position > 0) {
             offset = scale * (1 - position % 1);
         } else if (position < 0) {
             offset = Math.abs(scale * (position % 1));
@@ -130,8 +137,8 @@ AxisScaleView.prototype.drawMarks = function () {
         markEls.classList.add('marks');
 
 
-        var i = 0;
-        while (offset + i * scale <= maxSize) {
+        var i;
+        for (i = 0; offset + i * scale <= maxSize; i += self.axisScale.markStride) {
             mark = createMarkElement(orientation);
             label = createLabelElement();
             mark.style[markPosition] = offset + i * scale + 'px';
@@ -139,7 +146,6 @@ AxisScaleView.prototype.drawMarks = function () {
 
             mark.appendChild(label);
             markEls.appendChild(mark);
-            i = i + self.axisScale.markStride;
         }
 
         return markEls;
@@ -157,7 +163,7 @@ AxisScaleView.prototype.drawMarks = function () {
     this.el.appendChild(this.marks);
 };
 
-AxisScaleView.prototype.eraseAxisScale = function() {
+AxisScaleView.prototype.eraseAxisScale = function () {
     var range = document.createRange();
     range.selectNodeContents(this.el);
     range.deleteContents();
