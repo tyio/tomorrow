@@ -28,6 +28,8 @@ var InteractionController = require('../input/InteractionController');
 
 var AxisRescale = require('../../aspects/axis/AxisRescale');
 
+var ChannelLegendView = require('../../view/ChannelLegendView');
+
 var GraphBuilder = function () {
     this.selection = new Rectangle(0, 0, 1, 10);
     this.size = new Vector2(800, 600);
@@ -178,12 +180,16 @@ GraphBuilder.prototype.build = function (dataFrame) {
         return channelView;
     });
 
+
     var chartCanvas = new ChartCanvas({
         size: this.size,
         selection: this.selection,
         dataFrame: dataFrame,
         channelViews: channelViews
     });
+
+
+    var channelLegendView = new ChannelLegendView(chartCanvas.channelViews);
 
     //use first two channels as X and Y axis respectively
     if (channels.length < 2) {
@@ -214,6 +220,8 @@ GraphBuilder.prototype.build = function (dataFrame) {
 
     chart.addAxisView(av0);
     chart.addAxisView(av1);
+
+    chart.el.appendChild(channelLegendView.el);
 
     registerInteractions(chart);
 

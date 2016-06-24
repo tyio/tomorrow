@@ -33,7 +33,7 @@ var Chart = function () {
     this.axisViews = {
         x: [],
         y: []
-    }
+    };
 
     this.size = null;
 };

@@ -1,6 +1,6 @@
 .chart {
-    position: relative;
-    display: inline-block;
+    position: absolute;
+    display: block;
     font-family: 'Questrial', sans-serif;
 }
 
@@ -21,28 +21,56 @@ canvas {
     background-color: black;
 }
 
-.axis .marks .mark.vertical{
+.axis .marks .mark.vertical {
     height: 1px;
     width: 10px;
     right: 0;
 }
 
-.axis .marks .mark.horizontal{
+.axis .marks .mark.horizontal {
     height: 10px;
     width: 1px;
 }
 
-.axis .marks .mark .label{
+.axis .marks .mark .label {
     position: absolute;
     font-size: 12px;
 }
 
-.axis .marks .mark.vertical .label{
+.axis .marks .mark.vertical .label {
     right: 15px;
     transform: translate(0, -50%);
 }
 
-.axis .marks .mark.horizontal .label{
+.axis .marks .mark.horizontal .label {
     top: 15px;
     transform: translate(-50%, 0);
+}
+
+.channel-legend {
+    background: rgba(255, 255, 255, 0.8);
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.channel-legend .channel {
+    overflow: visible;
+}
+
+.channel-legend .channel .label {
+    white-space: nowrap;
+    position: relative;
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.channel-legend .channel .marker {
+    width: 10px;
+    height: 10px;
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    left: 0;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
