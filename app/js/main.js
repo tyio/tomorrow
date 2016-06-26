@@ -5,6 +5,8 @@ var Vector2 = require('./model/core/geom/Vector2');
 
 var GraphBuilder = require('./model/tomorrow/GraphBuilder');
 
+var RandomGeneratorOrder2 = require('./model/tomorrow/data/generators/RandomGeneratorOrder2');
+
 var time = new Channel();
 time.name = 'time';
 time.unit = 's';
@@ -29,19 +31,14 @@ var dataFrame = new DataFrame([time, channel1, channel2, channel3], time);
 
 function generateData(numSamples, table) {
     console.time("generateData");
-    var a = 0;
-    var b = 3;
-    var ad = 0.1;
-    var bd = 0.03;
-    var ad2 = ad / 2;
-    var bd2 = bd / 2;
+    var g0 = new RandomGeneratorOrder2(0, 0, 0.000000005, 0.1);
+    var g1 = new RandomGeneratorOrder2(3, 0, 0.0000000013, 0.001);
+    var g2 = new RandomGeneratorOrder2(7, 0, 0.0000000014, 0.005);
     table.addRows(numSamples, function (i, row) {
         row[0] = i / 100;
-        a += Math.random() * ad - ad2;
-        b += Math.random() * bd - bd2;
-        row[1] = a;
-        row[2] = b;
-        row[3] = a - b;
+        row[1] = g0.next();
+        row[2] = g1.next();
+        row[3] = g2.next();
     });
     console.timeEnd("generateData");
 }
