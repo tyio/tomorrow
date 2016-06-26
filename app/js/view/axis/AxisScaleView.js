@@ -116,6 +116,16 @@ AxisScaleView.prototype.drawMarks = function () {
         return label;
     }
 
+
+    function getRemainder (number) {
+        var fraction = String(number).split('.')[1];
+        if (fraction){
+            return fraction.length;
+        } else {
+            return 0;
+        }
+    }
+
     function draw(orientation) {
         var mark;
         var label;
@@ -125,6 +135,8 @@ AxisScaleView.prototype.drawMarks = function () {
         var labelValue;
         var position;
         var markStride = self.axisScale.markStride.value;
+        var precision =  getRemainder(markStride);
+
 
         if (orientation === Orientation.HORIZONTAL) {
             position = self.selection.position.x;
@@ -150,11 +162,15 @@ AxisScaleView.prototype.drawMarks = function () {
         markEls.classList.add('marks');
 
         var i;
+        var value;
         for (i = 0; offset + i * scale <= maxSize; i += markStride) {
             mark = createMarkElement(orientation);
             label = createLabelElement();
             mark.style[markPosition] = offset + i * scale + 'px';
-            label.textContent = Math.ceil((labelValue + i)/markStride) * markStride;
+            value = Math.ceil((labelValue + i)/markStride) * markStride;
+            value = value.toLocaleString('en', {maximumFractionDigits: precision, useGrouping:false});
+
+            label.textContent = value;
 
             mark.appendChild(label);
             markEls.appendChild(mark);
