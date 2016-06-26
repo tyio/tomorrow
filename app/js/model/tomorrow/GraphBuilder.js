@@ -203,6 +203,17 @@ GraphBuilder.prototype.build = function (dataFrame) {
     var a0 = buildAxis(c0);
     var a1 = buildAxis(c1);
 
+    this.axisRescale.adjustAxisScales(a0, this.size.x, this.selection.size.x, this.axisRescale.xLimit);
+    this.axisRescale.adjustAxisScales(a1, this.size.y, this.selection.size.y, this.axisRescale.yLimit);
+    // register aspects
+    this.axisRescale.register(a0, Orientation.HORIZONTAL);
+    this.axisRescale.register(a1, Orientation.VERTICAL);
+
+
+
+
+
+    
     var av0 = buildAxisView(a0, Orientation.HORIZONTAL, this.size, this.selection);
     var av1 = buildAxisView(a1, Orientation.VERTICAL, this.size, this.selection);
 
@@ -225,10 +236,6 @@ GraphBuilder.prototype.build = function (dataFrame) {
 
     registerInteractions(chart);
 
-    // register aspects
-
-    this.axisRescale.register(a0, Orientation.HORIZONTAL);
-    this.axisRescale.register(a1, Orientation.VERTICAL);
     return chart;
 };
 
