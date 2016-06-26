@@ -32,8 +32,8 @@ var dataFrame = new DataFrame([time, channel1, channel2, channel3], time);
 function generateData(numSamples, table) {
     console.time("generateData");
     var g0 = new RandomGeneratorOrder2(0, 0, 0.000000005, 0.1);
-    var g1 = new RandomGeneratorOrder2(3, 0, 0.0000000013, 0.001);
-    var g2 = new RandomGeneratorOrder2(7, 0, 0.0000000014, 0.005);
+    var g1 = new RandomGeneratorOrder2(1, 0, 0.0000000013, 0.001);
+    var g2 = new RandomGeneratorOrder2(2, 0, 0.0000000014, 0.005);
     table.addRows(numSamples, function (i, row) {
         row[0] = i / 100;
         row[1] = g0.next();
