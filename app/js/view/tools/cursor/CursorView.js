@@ -75,12 +75,17 @@ var CursorView = function (chartCanvas) {
                 var channelIndex = dataFrame.getValueIndexByChannel(channelView.channel);
                 var value = values[channelIndex];
                 markerView.value.set(value);
-
-                var position = (value - chartCanvas.selection.position.y) * chartCanvas.size.y / chartCanvas.selection.size.y;
-                markerView.position.set(position);
             });
         });
+        updateVerticalPositions();
+    }
 
+    function updateVerticalPositions() {
+        markerViews.forEach(function (markerView) {
+            var value = markerView.value.get();
+            var position = (value - chartCanvas.selection.position.y) * chartCanvas.size.y / chartCanvas.selection.size.y;
+            markerView.position.set(position);
+        });
     }
 
     function addMarker(channelView) {
@@ -97,9 +102,13 @@ var CursorView = function (chartCanvas) {
     //TODO handle removal
 
     var boundUpdate = this.update.bind(this);
+    function update() {
+        boundUpdate();
+        updateValues();
+    }
 
-    chartCanvas.selection.size.onChanged.add(boundUpdate);
-    chartCanvas.selection.position.onChanged.add(boundUpdate);
+    chartCanvas.selection.size.onChanged.add(update);
+    chartCanvas.selection.position.onChanged.add(update);
     position.onChanged.add(boundUpdate);
 
     position.onChanged.add(updateValues);
