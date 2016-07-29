@@ -29,6 +29,7 @@ var InteractionController = require('../input/InteractionController');
 var AxisRescale = require('../../aspects/axis/AxisRescale');
 
 var ChannelLegendView = require('../../view/ChannelLegendView');
+var CursorView = require('../../view/tools/cursor/CursorView');
 
 var GraphBuilder = function () {
     this.selection = new Rectangle(0, 0, 1, 10);
@@ -153,6 +154,8 @@ function registerInteractions(chart) {
 
         selection.position.sub(positionDelta);
     });
+
+    return ic;
 }
 
 /**
@@ -189,8 +192,6 @@ GraphBuilder.prototype.build = function (dataFrame) {
     });
 
 
-    var channelLegendView = new ChannelLegendView(chartCanvas.channelViews);
-
     //use first two channels as X and Y axis respectively
     if (channels.length < 2) {
         throw new Error('Insufficient number of channels to build graph, need at least 2');
@@ -210,10 +211,6 @@ GraphBuilder.prototype.build = function (dataFrame) {
     this.axisRescale.register(a1, Orientation.VERTICAL);
 
 
-
-
-
-    
     var av0 = buildAxisView(a0, Orientation.HORIZONTAL, this.size, this.selection);
     var av1 = buildAxisView(a1, Orientation.VERTICAL, this.size, this.selection);
 
@@ -232,9 +229,19 @@ GraphBuilder.prototype.build = function (dataFrame) {
     chart.addAxisView(av0);
     chart.addAxisView(av1);
 
+    var interactionController = registerInteractions(chart);
+
+    //add legend
+    var channelLegendView = new ChannelLegendView(chartCanvas.channelViews);
     chart.el.appendChild(channelLegendView.el);
 
-    registerInteractions(chart);
+    //add cursor
+    var cursorView = new CursorView(chartCanvas);
+    chartCanvas.el.appendChild(cursorView.el);
+    interactionController.pointer.on.move.add(function (position) {
+        var p = (position.x / chartCanvas.size.x) * chartCanvas.selection.size.x + chartCanvas.selection.position.x;
+        cursorView.position.set(p);
+    });
 
     return chart;
 };

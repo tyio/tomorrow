@@ -19,7 +19,9 @@ var ChartCanvas = function (options) {
 
     var glCanvas = new ChartCanvasGL(this);
 
-    this.el = glCanvas.el;
+    this.el = document.createElement('div');
+    this.el.style.position = 'relative';
+    this.el.appendChild(glCanvas.el);
 };
 
 module.exports = ChartCanvas;

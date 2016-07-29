@@ -23,12 +23,11 @@ var ChartCanvasGL = function (view) {
 
     renderer.setClearColor(0, 0);
 
-    function handleViewSizeChange() {
-        renderer.setSize(view.size.x, view.size.y);
+    function handleViewSizeChange(x, y) {
+        renderer.setSize(x, y);
     }
 
-    view.size.onChanged.add(handleViewSizeChange);
-    handleViewSizeChange();
+    view.size.react(handleViewSizeChange);
 
     var channelViews = view.channelViews;
     for (var i = 0; i < channelViews.length; i++) {
@@ -72,11 +71,6 @@ ChartCanvasGL.prototype.updateCamera = function () {
     var selection = this.view.selection;
     var size = selection.size;
     var camera = this.camera;
-
-    // camera.left = 0;
-    // camera.right = size.x;
-    // camera.top = size.y;
-    // camera.bottom = 0;
 
     camera.left = 0;
     camera.right = -size.x;
