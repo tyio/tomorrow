@@ -1,5 +1,6 @@
 var AxisScaleStyle = require('./AxisScaleStyle');
 var Vector2 = require('../../model/core/geom/Vector2');
+var MetricPrefix = require('../../model/tomorrow/data/MetricPrefix');
 var Orientation = require('../../model/tomorrow/axis/Orientation');
 
 /**
@@ -48,6 +49,8 @@ var AxisScaleView = function (options) {
      * @type {null}
      */
     this.marks = null;
+
+    this.metricCalculator = Object.create(MetricPrefix);
 
     this.drawAxisScale();
 
@@ -168,9 +171,12 @@ AxisScaleView.prototype.drawMarks = function () {
             label = createLabelElement();
             mark.style[markPosition] = offset + i * scale + 'px';
             value = Math.ceil((labelValue + i)/markStride) * markStride;
-            value = value.toLocaleString('en', {maximumFractionDigits: precision, useGrouping:false});
-
+            value = new Intl.NumberFormat('en-US', { maximumFractionDigits: precision, useGrouping:false }).format(value);
+            value = parseFloat(value);
+            value = self.metricCalculator.reduce(value);
             label.textContent = value;
+
+
 
             mark.appendChild(label);
             markEls.appendChild(mark);

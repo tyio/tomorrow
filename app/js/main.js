@@ -48,7 +48,10 @@ generateData(10000000, dataFrame.data);
 var builder = new GraphBuilder();
 
 var chart = builder.setSize(950, 600)
-    .setSelection(0, -10, 100000, 20)
+    .setSelection(0, 0, 100000, 5)
     .build(dataFrame);
 
 document.body.appendChild(chart.el);
+
+
+
