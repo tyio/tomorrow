@@ -259,7 +259,7 @@ LineSegment1.resolveOverlap = function (segments, limits) {
     });
 
     //resolve overlap between groups
-    if (segmentGroups.length > 1 && segmentGroups[0].members.length > 1) {
+    if (segmentGroups.length > 1) {
         var totalSpaceRequired = segmentGroups.reduce(function (sum, element) {
             return sum + element.length();
         }, 0);
