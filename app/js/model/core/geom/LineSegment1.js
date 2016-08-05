@@ -71,17 +71,17 @@ LineSegment1.prototype.expandToFit = function (other) {
 };
 
 /**
- * Sets result to cover overlap between this segment and other if such overlap exists.
+ * Sets result to cover overlap between this segment and other if such overlap exists. Overlap includes touching
  * @param {LineSegment1} other
  * @param {LineSegment1} result
  * @returns {boolean}
  */
 LineSegment1.prototype.computeIntersection = function (other, result) {
-    if (this.p0 < other.p0 && this.p1 > other.p0) {
+    if (this.p0 <= other.p0 && this.p1 >= other.p0) {
         result.p0 = other.p0;
         result.p1 = Math.min(this.p1, other.p1);
         return true;
-    } else if (this.p0 > other.p0 && this.p0 < other.p1) {
+    } else if (this.p0 >= other.p0 && this.p0 <= other.p1) {
         result.p0 = this.p0;
         result.p1 = Math.min(this.p1, other.p1);
         return true;
@@ -272,7 +272,7 @@ LineSegment1.resolveOverlap = function (segments, limits) {
                     return false;
                 }
             });
-            if(needAnotherRecursion){
+            if (needAnotherRecursion) {
                 LineSegment1.resolveOverlap(segmentGroups, limits);
             }
         }
