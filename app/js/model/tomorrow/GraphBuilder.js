@@ -182,15 +182,13 @@ GraphBuilder.prototype.build = function (dataFrame) {
 
         return channelView;
     });
-
-
+    
     var chartCanvas = new ChartCanvas({
         size: this.size,
         selection: this.selection,
         dataFrame: dataFrame,
         channelViews: channelViews
     });
-
 
     //use first two channels as X and Y axis respectively
     if (channels.length < 2) {

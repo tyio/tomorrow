@@ -13,15 +13,10 @@ var AxisRescale = function (options) {
     aspect.fontSize = 5;
     aspect.lineHeight = 15;
 
-    aspect.xLimit = calculateXLimit();
+    aspect.xLimit = 4 * aspect.fontSize;
     aspect.yLimit = aspect.lineHeight;
 
     aspect.selection.size.onChanged.add(rescale);
-
-    function calculateXLimit() {
-        var numberOfDigits = Math.floor(aspect.selection.position.x + aspect.selection.size.x).toString().length;
-        aspect.xLimit = numberOfDigits * aspect.fontSize;
-    }
 
     function rescaleY(axis){
         aspect.adjustAxisScales(axis, aspect.size.y, aspect.selection.size.y, aspect.yLimit);
@@ -32,7 +27,6 @@ var AxisRescale = function (options) {
     }
 
     function rescale() {
-        calculateXLimit();
         aspect.axis.x.data.forEach(rescaleX);
         aspect.axis.y.data.forEach(rescaleY);
     }
