@@ -26,7 +26,8 @@ var InteractionController = function (options) {
     };
 
     function makeV2FromPointerEvent(event) {
-        return new Vector2(event.clientX, event.clientY)
+        //NOTE: MouseEvent.offsetX and MouseEvent.offsetY are working draft as of time of writing this (05/08/2016) but support seems to be uniform
+        return new Vector2(event.offsetX, event.offsetY);
     }
 
     function handleDomEventMouseDown(event) {

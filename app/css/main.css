@@ -76,6 +76,7 @@ canvas {
 }
 
 .cursor {
+    pointer-events: none;
     border-left: 1px solid black;
 }
 
