@@ -16,7 +16,7 @@ var DataFrame = function ( channels, masterChannel ) {
 
     /**
      *
-     * @type {Array}
+     * @type {RowFirstTable}
      */
     this.data = new RowFirstTable( channels.map( function ( c ) {
         return c.dataType;

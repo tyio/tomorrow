@@ -19,19 +19,41 @@ Signal.prototype.contains = function(h){
     return false;
 };
 Signal.prototype.mute = function(){
-  this.silent = true;
+    this.silent = true;
 };
 Signal.prototype.unmute = function(){
-  this.silent = false;
+    this.silent = false;
 };
+
+/**
+ * Tells if there are any handlers attached to the signal or not
+ * @returns {boolean}
+ */
+Signal.prototype.isConnected = function () {
+    return this.handlers.length > 0 || this.handlersSingle.length > 0;
+};
+
+/**
+ *
+ * @param {function} h
+ */
 Signal.prototype.addOne = function(h){
-  this.handlersSingle.push(h);
+    this.handlersSingle.push(h);
 };
+
+/**
+ *
+ * @param {function} h
+ */
 Signal.prototype.add = function(h){
     if(!this.contains(h)){
         this.handlers.push(h);
     }
 };
+/**
+ *
+ * @param {function} h
+ */
 Signal.prototype.remove = function(h){
     var handlers = this.handlers;
     var i = handlers.indexOf(h);
@@ -51,17 +73,21 @@ Signal.prototype.dispatch = function () {
         return;
     }
     var handlers = this.handlers;
-    var i, l, h;
+    var i, h;
     for (i = handlers.length - 1; i >= 0; i--) {
         h = handlers[i];
         h.apply(void 0, arguments);
     }
 
     var handlersSingle = this.handlersSingle;
-    for (i = l = handlersSingle.length-1; i >= 0; i--) {
-        h = handlersSingle[i];
-        handlersSingle.splice(i,1);
-        h.apply(void 0, arguments);
+
+    var numHandlersSingle = handlersSingle.length;
+    if(numHandlersSingle>0) {
+        for ( i =  numHandlersSingle - 1; i >= 0; i-- ) {
+            h = handlersSingle[ i ];
+            h.apply( void 0, arguments );
+        }
+        handlersSingle.length = 0;
     }
 };
 module.exports = Signal;

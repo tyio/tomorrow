@@ -2,6 +2,8 @@
  * Created by Alex on 22/05/2016.
  */
 
+"use strict";
+
 var UniformSampler = function ( delta ) {
     this.delta = delta;
 };
@@ -16,7 +18,6 @@ var UniformSampler = function ( delta ) {
  */
 UniformSampler.prototype.traverse = function ( dataFrame, startValue, endValue, visitor ) {
     //sanitize inputs
-
     var delta = this.delta;
     var record = [];
 
@@ -63,7 +64,7 @@ UniformSampler.prototype.traverse = function ( dataFrame, startValue, endValue, 
     var end = Math.min(endValue, masterMaxValue);
 
     for ( var i = offset; i <= end; i += delta ) {
-        sampleLinear( i, record, visitor );
+        sampleLinear( i, record );
     }
 };
 

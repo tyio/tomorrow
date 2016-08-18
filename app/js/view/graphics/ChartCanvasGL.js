@@ -41,17 +41,32 @@ var ChartCanvasGL = function (view) {
 
     function handleSelectionChange() {
         self.__cameraNeedsUpdate = true;
-
-        self.paint(self.view.selection);
-        self.render();
+        self.__needsRepaint = true;
     }
 
-    view.selection.position.onChanged.add(handleSelectionChange);
-    view.selection.size.onChanged.add(handleSelectionChange);
+    var selection = view.selection;
+    selection.position.onChanged.add(handleSelectionChange);
+    selection.size.onChanged.add(handleSelectionChange);
+
+    var masterSignalIndex = view.dataFrame.getValueIndexByChannel(view.dataFrame.masterChannel);
+
+    function handleSampleAdded(index, values) {
+        //check if master signal value is in selection range
+        var masterSignalValue = values[masterSignalIndex];
+        if(masterSignalValue >= selection.position.x && masterSignalValue <=selection.position.x + selection.size.x){
+            //record in selection range
+            self.__needsRepaint = true;
+        }
+    }
+    view.dataFrame.data.on.added.add(handleSampleAdded);
 
     this.el = renderer.domElement;
 
     function updateView() {
+        if(self.__needsRepaint){
+            self.paint(selection);
+            self.__needsRepaint = false;
+        }
         self.render();
         requestAnimationFrame(updateView);
     }

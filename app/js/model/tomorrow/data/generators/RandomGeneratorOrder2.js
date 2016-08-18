@@ -10,11 +10,11 @@ function RandomGeneratorOrder2(offset, startValue, driftRange, noise) {
     this.noise = noise;
 }
 
-RandomGeneratorOrder2.prototype.next = function () {
+RandomGeneratorOrder2.prototype.next = function (masterDelta) {
     var result = this.v0;
     this.v0 += this.v1;
-    this.v1 += Math.random() * this.driftRange - this.driftOffset;
-    return result + ( Math.random() * this.noise - this.noise / 2);
+    this.v1 += ( Math.random() * this.driftRange - this.driftOffset)*masterDelta;
+    return result + ( Math.random() * this.noise - this.noise / 2)*masterDelta;
 };
 
 module.exports = RandomGeneratorOrder2;

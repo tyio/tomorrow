@@ -1,6 +1,10 @@
 /**
  * Created by Alex on 10/04/2016.
  */
+
+"use strict";
+var Signal = require('../../core/Signal');
+
 var DataViewReaders = {
     "uint8": "getUint8",
     "uint16": "getUint16",
@@ -85,6 +89,9 @@ var RowFirstTable = function RowFirstTable(types) {
     this.length = 0;
     this.rowsAvailable = 0;
 
+    this.on = {
+        added: new Signal()
+    };
     this.initialize();
 };
 
@@ -158,6 +165,8 @@ RowFirstTable.prototype.addRow = function (values) {
 
 
     this.writeRowMethod(this.dataView, this.bytesPerRecord * rowIndex, values);
+
+    this.on.added.dispatch(rowIndex, values);
 };
 
 /**
@@ -186,10 +195,24 @@ RowFirstTable.prototype.addRows = function (count, callback) {
     var bytesPerRecord = this.bytesPerRecord;
     var dataView = this.dataView;
     var writeRowMethod = this.writeRowMethod;
-    
-    for (; i < newRowCount; i++) {
+
+    var onAdded = this.on.added;
+
+    function addOneSignaling(index) {
+        addOneSilent(index);
+        onAdded.dispatch(index, row);
+    }
+
+    function addOneSilent(i) {
         callback(i, row);
         writeRowMethod(dataView, bytesPerRecord * i, row);
+    }
+
+    //depending on whether signal is being listened, pick signaling or silent generator
+    var addOne = onAdded.isConnected() ? addOneSignaling : addOneSilent;
+
+    for (; i < newRowCount; i++) {
+        addOne(i);
     }
 
 };
