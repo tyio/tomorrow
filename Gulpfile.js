@@ -38,11 +38,11 @@ gulp.task('css', function () {
 
 gulp.task('release-build', function () {
     notifier.notify({title: 'release build', message: 'start'});
-    var bundler = browserify('./app/js/main.js');
+    var bundler = browserify('./app/js/Library.js');
     return bundler.bundle()
         // log errors if they happen
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source('bundle.js'))
+        .pipe(source('Tomorrow.js'))
         .pipe(buffer())
         .pipe(uglify())
         .pipe(gulp.dest('./public'))
