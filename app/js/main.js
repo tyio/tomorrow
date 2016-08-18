@@ -113,14 +113,14 @@ function startContinuousDataGeneration(table, samplesPerSecond, generators) {
 
 var generators = makeSampleGenerators(dataFrame.data);
 
-generateData(1000, dataFrame.data, generators);
+generateData(2000, dataFrame.data, generators);
 
 var builder = new GraphBuilder();
 
 var chart = builder.setSize(950, 600)
-    .setSelection(0, 0, 10, 5)
+    .setSelection(0, 0, 20, 5)
     .build(dataFrame);
 
-startContinuousDataGeneration(dataFrame.data, 24, generators);
+startContinuousDataGeneration(dataFrame.data, 60, generators);
 
 document.body.appendChild(chart.el);
