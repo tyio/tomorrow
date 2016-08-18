@@ -7,6 +7,7 @@ var GraphBuilder = require('./model/tomorrow/GraphBuilder');
 
 var RandomGeneratorOrder2 = require('./model/tomorrow/data/generators/RandomGeneratorOrder2');
 var LinearGenerator = require('./model/tomorrow/data/generators/LinearGenerator');
+var SineWaveGenerator = require('./model/tomorrow/data/generators/SineWaveGenerator');
 
 var time = new Channel();
 time.name = 'time';
@@ -30,37 +31,48 @@ channel3.dataType = DataType.Float32;
 
 var dataFrame = new DataFrame([time, channel1, channel2, channel3], time);
 
-function generateData(numSamples, table) {
-    console.time("generateData");
-    var g0 = new RandomGeneratorOrder2(0, 0, 0.005, 0.1);
-    var g1 = new RandomGeneratorOrder2(1, 0, 0.0013, 0.001);
-    var g2 = new RandomGeneratorOrder2(2, 0, 0.0014, 0.005);
+function makeSampleGenerators(table) {
+    var offset = 0;
+    return table.types.map(function (t, index) {
+        if (index === 0) {
+            //master
+            return new LinearGenerator(0, 1);
+        } else {
+            var period = Math.random() * 10 + 1;
+            var amplitude = Math.random() * 10 + 1;
+            var phase = Math.random();
 
-    var masterStep = 1/100;
+            var result = new SineWaveGenerator(period, amplitude, phase, offset+amplitude);
+            offset += amplitude*2;
+            return result;
+        }
+    });
+}
+
+function generateData(numSamples, table, generators) {
+    console.time("generateData");
+    var masterStep = 1 / 100;
+    var rowLength = table.types.length;
+    //check if there's enough generators
+    if (generators.length < rowLength) {
+        throw new Error("Not enough generators. Need " + rowLength + ", have " + generators.length);
+    }
+
     table.addRows(numSamples, function (i, row) {
-        row[0] = i *masterStep;
-        row[1] = g0.next(masterStep);
-        row[2] = g1.next(masterStep);
-        row[3] = g2.next(masterStep);
+        for (var j = 0; j < rowLength; j++) {
+            row[j] = generators[j].next(masterStep);
+        }
     });
     console.timeEnd("generateData");
 }
 
-function startContinuousDataGeneration(table, samplesPerSecond) {
+function startContinuousDataGeneration(table, samplesPerSecond, generators) {
     var period = 1 / samplesPerSecond;
     var smallestTickInterval = 15 / 1000;
 
     var startSample = [];
-    table.getRow(table.length-1, startSample);
+    table.getRow(table.length - 1, startSample);
 
-    var generators = startSample.map(function (value, index) {
-        if (index === 0) {
-            //master
-            return new LinearGenerator(value, 1);
-        } else {
-            return new RandomGeneratorOrder2(value, 0, 0.005, 0.1);
-        }
-    });
     var generatedSample = [];
 
     function makeSample(dt) {
@@ -79,8 +91,10 @@ function startContinuousDataGeneration(table, samplesPerSecond) {
             var timeDelta = (timeNow - lastSampleTime) / 1000;
             var numToGen = timeDelta * samplesPerSecond + slackSamples;
 
-            var sampleTimeDelta = timeDelta / numToGen;
-            for (var i = 0; i < numToGen; i++) {
+            var wholeSamples = numToGen | 0;
+
+            var sampleTimeDelta = timeDelta / wholeSamples;
+            for (var i = 0; i < wholeSamples; i++) {
                 makeSample(sampleTimeDelta);
             }
             slackSamples = numToGen % 1;
@@ -97,14 +111,16 @@ function startContinuousDataGeneration(table, samplesPerSecond) {
     }
 }
 
-generateData(1000, dataFrame.data);
+var generators = makeSampleGenerators(dataFrame.data);
+
+generateData(1000, dataFrame.data, generators);
 
 var builder = new GraphBuilder();
 
 var chart = builder.setSize(950, 600)
-    .setSelection(0, 0, 100, 5)
+    .setSelection(0, 0, 10, 5)
     .build(dataFrame);
 
-startContinuousDataGeneration(dataFrame.data, 1000);
+startContinuousDataGeneration(dataFrame.data, 24, generators);
 
 document.body.appendChild(chart.el);
