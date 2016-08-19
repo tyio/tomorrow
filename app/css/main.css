@@ -81,24 +81,20 @@ canvas {
 }
 
 .cursor .marker {
-    left: 4px;
     position: absolute;
 }
 
 .cursor .marker .label {
     position: absolute;
-    visibility: hidden;
 }
 
 .cursor .marker .value {
-    line-height: 0;
     left: 14px;
     position: absolute;
     text-shadow: 1px 0 0 rgba(255, 255, 255, 1);
 }
 
 .cursor .marker .symbol {
-    top: -5px;
     position: absolute;
     width: 10px;
     height: 10px;

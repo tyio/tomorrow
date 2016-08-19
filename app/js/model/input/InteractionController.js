@@ -62,13 +62,9 @@ var InteractionController = function (options) {
         domElement.removeEventListener('wheel', handleDomEventWheel);
     }
 
-    this.elements.on.added.add(function (elements) {
-        elements.forEach(link);
-    });
+    this.elements.on.added.add(link);
 
-    this.elements.on.removed.add(function (elements) {
-        elements.forEach(unlink);
-    });
+    this.elements.on.removed.add(unlink);
 
     //process arguments
     if (options instanceof Node) {

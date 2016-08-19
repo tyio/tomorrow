@@ -7,43 +7,78 @@ var ObservedValue = require('../../../model/core/math/ObservedValue');
 var UniformSampler = require('../../../model/tomorrow/data/transform/UniformSampler');
 var LineSegment1 = require('../../../model/core/geom/LineSegment1');
 
+var View = require('../../common/View');
+var LabelView = require('../../common/LabelView');
+
+var HorizontalDirectionType = {
+    LeftToRight: 0,
+    RightToLeft: 1
+};
+
 /**
  *
  * @param {ChannelView} channelView
  * @constructor
  */
 function MarkerView(channelView) {
-    this.position = new ObservedValue(0);
+    View.apply(this, arguments);
+
+    var symbolSize = 10;
+    var layoutSpacing = 4;
+
+    var self = this;
+
+    this.level = new ObservedValue(0);
 
     this.channelView = channelView;
+
     this.value = new ObservedValue();
 
     var el = this.el = document.createElement('div');
     el.classList.add('marker');
 
-    var elValue = document.createElement('div');
-    var elLabel = document.createElement('div');
-    var elSymbol = document.createElement('div');
+    var vValue = new LabelView(this.value);
+    vValue.el.classList.add('value');
 
-    elValue.classList.add('value');
-    elLabel.classList.add('label');
-    elSymbol.classList.add('symbol');
+    var vSymbol = new View();
+    vSymbol.el = document.createElement('div');
+    vSymbol.el.style.width = symbolSize + "px";
+    vSymbol.el.style.height = symbolSize + "px";
 
+    vSymbol.size.set(symbolSize, symbolSize);
 
-    el.appendChild(elValue);
-    el.appendChild(elLabel);
-    el.appendChild(elSymbol);
-
-    elSymbol.style.backgroundColor = channelView.style.color;
-    elLabel.innerText = channelView.channel.name;
-    this.value.onChanged.add(function (v) {
-        elValue.innerText = v;
-    });
+    vSymbol.el.classList.add('symbol');
+    vSymbol.el.style.backgroundColor = channelView.style.color;
 
 
-    this.position.onChanged.add(function (v) {
+    this.children.add(vValue);
+    this.children.add(vSymbol);
+
+    this.level.onChanged.add(function (v) {
         el.style.bottom = v + "px";
     });
+
+    this.direction = new ObservedValue(HorizontalDirectionType.LeftToRight);
+
+    function doLayout() {
+        switch (self.direction.get()) {
+            case HorizontalDirectionType.LeftToRight:
+                vSymbol.position.set(layoutSpacing, -vSymbol.size.y / 2);
+                vValue.position.set(vSymbol.position.x + vSymbol.size.x + layoutSpacing, -vValue.size.y / 2);
+                break;
+            case HorizontalDirectionType.RightToLeft:
+                vSymbol.position.set(-(vSymbol.size.x + layoutSpacing), -vSymbol.size.y / 2);
+                vValue.position.set(vSymbol.position.x - vValue.size.x - layoutSpacing, -vValue.size.y / 2);
+                break;
+            default:
+                throw new Error("Unsupported direction value: " + v);
+        }
+        self.size.set(vValue.size.x + vSymbol.size.x + layoutSpacing*2, Math.max(vValue.size.y, vSymbol.size.y));
+    }
+
+    doLayout();
+    vValue.size.onChanged.add(doLayout);
+    this.direction.onChanged.add(doLayout);
 }
 
 /**
@@ -60,7 +95,7 @@ function resolveMarkerOverlap(markerViews, limits) {
     var segments = markerViews.map(function (v) {
         var height = getMarkerHeight(v);
         var h_2 = height / 2;
-        var p0 = v.position.get() - h_2;
+        var p0 = v.level.get() - h_2;
         var segment1 = new LineSegment1(p0, p0 + height);
         return segment1;
     });
@@ -68,7 +103,7 @@ function resolveMarkerOverlap(markerViews, limits) {
     segments.forEach(function (segment, index) {
         var markerView = markerViews[index];
         var height = getMarkerHeight(markerView);
-        markerView.position.set(segment.p0 + height / 2);
+        markerView.level.set(segment.p0 + height / 2);
     });
 }
 
@@ -92,17 +127,31 @@ var CursorView = function (chartCanvas) {
 
     var sampler = new UniformSampler(1);
 
+    var self = this;
+
     function updateValues() {
         var p = position.get();
 
         var dataFrame = chartCanvas.dataFrame;
         //using traversal of 0 length, this should be refactored into something nicer looking
         sampler.traverse(dataFrame, p, p, function (values) {
+            var maxMarkerWidth = 0;
             markerViews.forEach(function (markerView) {
                 var channelView = markerView.channelView;
                 var channelIndex = dataFrame.getValueIndexByChannel(channelView.channel);
                 var value = values[channelIndex];
                 markerView.value.set(value);
+
+                maxMarkerWidth = Math.max(maxMarkerWidth, markerView.size.x);
+            });
+
+            var d = HorizontalDirectionType.LeftToRight;
+            var positionOnCanvas = self.masterValueToViewportOffset(p);
+            if (maxMarkerWidth + positionOnCanvas > chartCanvas.size.x) {
+                d = HorizontalDirectionType.RightToLeft;
+            }
+            markerViews.forEach(function (v) {
+                v.direction.set(d);
             });
         });
         updateVerticalPositions();
@@ -112,7 +161,7 @@ var CursorView = function (chartCanvas) {
         markerViews.forEach(function (markerView) {
             var value = markerView.value.get();
             var position = (value - chartCanvas.selection.position.y) * chartCanvas.size.y / chartCanvas.selection.size.y;
-            markerView.position.set(position);
+            markerView.level.set(position);
         });
         var limits = new LineSegment1(0, chartCanvas.size.y);
         resolveMarkerOverlap(markerViews, limits);
@@ -184,13 +233,19 @@ var CursorView = function (chartCanvas) {
 
     position.onChanged.add(updateValues);
 };
-
-CursorView.prototype.update = function () {
+CursorView.prototype.masterValueToViewportOffset = function (v) {
     var canvas = this.chartCanvas;
     //calculate position for the on-screen element
-    var p0 = this.position.get() - canvas.selection.position.x;
+    var p0 = v- canvas.selection.position.x;
     var p1 = p0 / canvas.selection.size.x;
     var p2 = p1 * canvas.size.x;
+
+    return p2;
+};
+CursorView.prototype.update = function () {
+    var canvas = this.chartCanvas;
+
+    var p2 = this.masterValueToViewportOffset(this.position.get());
 
     this.el.style.left = p2 + 'px';
     this.el.style.top = 0 + 'px';
