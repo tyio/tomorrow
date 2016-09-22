@@ -27,6 +27,14 @@ var DataFrame = function ( channels, masterChannel ) {
      * @type {Channel}
      */
     this.masterChannel = masterChannel;
+
+    var self = this;
+    this.data.on.added.add(function(rowIndex, values) {
+        self.channels.forEach(function(channel, index){
+            channel.minValue.set(Math.min(values[index], channel.minValue.get()));
+            channel.maxValue.set(Math.max(values[index], channel.maxValue.get()));
+        });
+    })
 };
 
 /**

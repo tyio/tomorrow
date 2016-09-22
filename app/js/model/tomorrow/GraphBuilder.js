@@ -34,6 +34,7 @@ var CursorView = require('../../view/tools/cursor/CursorView');
 var GraphBuilder = function () {
     this.selection = new Rectangle(0, 0, 1, 10);
     this.size = new Vector2(800, 600);
+    this.previewSize = new Vector2(800, 100);
     this.axisRescale = new AxisRescale({
         size: this.size,
         selection: this.selection
@@ -48,6 +49,17 @@ var GraphBuilder = function () {
  */
 GraphBuilder.prototype.setSize = function (x, y) {
     this.size.set(x, y);
+    return this;
+};
+
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {GraphBuilder}
+ */
+GraphBuilder.prototype.setPreviewSize = function (x, y) {
+    this.previewSize.set(x, y);
     return this;
 };
 
@@ -240,6 +252,44 @@ GraphBuilder.prototype.build = function (dataFrame) {
         var p = (position.x / chartCanvas.size.x) * chartCanvas.selection.size.x + chartCanvas.selection.position.x;
         cursorView.position.set(p);
     });
+
+
+    // TODO: Extract all this preview stuff in a separate module
+    var previewRange = new Rectangle(0, 0, 0, 0);
+    dataFrame.channels.forEach(function(channel){
+        if (channel === dataFrame.masterChannel) {
+            channel.maxValue.react(adjustLength);
+        } else {
+            channel.minValue.react(adjustMin);
+            channel.maxValue.react(adjustMax);
+        }
+    });
+
+    function adjustLength(value){
+        previewRange.size.set(value, previewRange.size.y);
+    }
+
+    function adjustMin(value){
+        value = Math.min(value, previewRange.position.y);
+        previewRange.position.set(previewRange.position.x, value);
+    }
+
+    function adjustMax(value){
+        value = Math.max(value, previewRange.size.y);
+        previewRange.size.set(previewRange.size.x, value);
+    }
+
+    var previewCanvas = new ChartCanvas({
+        size: this.previewSize,
+        selection: previewRange,
+        dataFrame: dataFrame,
+        channelViews: channelViews
+    });
+    previewCanvas.el.style.position = 'absolute';
+    previewCanvas.el.style.marginLeft = '50px';
+    previewCanvas.el.style.border = 'solid black 1px';
+    previewCanvas.el.style.backgroundColor = 'beige';
+    chart.el.appendChild(previewCanvas.el);
 
     return chart;
 };
