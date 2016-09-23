@@ -254,30 +254,40 @@ GraphBuilder.prototype.build = function (dataFrame) {
     });
 
 
+
+
     // TODO: Extract all this preview stuff in a separate module
     var previewRange = new Rectangle(0, 0, 0, 0);
+    function adjustLength(value){
+        previewRange.size.set(value, previewRange.size.y);
+    }
+
+    var absoluteMin = Number.POSITIVE_INFINITY;
+    var absoluteMax = Number.NEGATIVE_INFINITY;
+
+    function updateRangeY() {
+        previewRange.position.set(previewRange.position.x, absoluteMin);
+        previewRange.size.set(previewRange.size.x, absoluteMax-absoluteMin);
+    }
+
+    function adjustMin(value){
+        absoluteMin = Math.min(absoluteMin, value);
+        updateRangeY();
+    }
+
+    function adjustRange(value){
+        absoluteMax = Math.max(absoluteMax, value);
+        updateRangeY();
+    }
+
     dataFrame.channels.forEach(function(channel){
         if (channel === dataFrame.masterChannel) {
             channel.maxValue.react(adjustLength);
         } else {
             channel.minValue.react(adjustMin);
-            channel.maxValue.react(adjustMax);
+            channel.maxValue.react(adjustRange);
         }
     });
-
-    function adjustLength(value){
-        previewRange.size.set(value, previewRange.size.y);
-    }
-
-    function adjustMin(value){
-        value = Math.min(value, previewRange.position.y);
-        previewRange.position.set(previewRange.position.x, value);
-    }
-
-    function adjustMax(value){
-        value = Math.max(value, previewRange.size.y);
-        previewRange.size.set(previewRange.size.x, value);
-    }
 
     var previewCanvas = new ChartCanvas({
         size: this.previewSize,
@@ -285,6 +295,7 @@ GraphBuilder.prototype.build = function (dataFrame) {
         dataFrame: dataFrame,
         channelViews: channelViews
     });
+
     previewCanvas.el.style.position = 'absolute';
     previewCanvas.el.style.marginLeft = '50px';
     previewCanvas.el.style.border = 'solid black 1px';
