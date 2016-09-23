@@ -24,6 +24,9 @@ Traverser.traverseRange = function (dataFrame, startValue, endValue, visitor) {
     var startIndex = dataFrame.findHighRecordIndexByMasterValue(startValue);
     var endIndex = dataFrame.findLowRecordIndexByMasterValue(endValue);
 
+    //TODO this is an inefficient workaround for incorrect index calculating functions
+    endIndex = Math.min(endIndex, dataFrame.data.length-1);
+
     for (var i = startIndex; i <= endIndex; i++) {
         data.getRow(i, record);
         visitor(i, record);

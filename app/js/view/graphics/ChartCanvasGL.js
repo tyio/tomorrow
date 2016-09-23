@@ -7,8 +7,10 @@ var THREE = require('THREE');
 var ChannelGL = require('./ChannelGL');
 var UniformSampler = require('../../model/tomorrow/data/transform/UniformSampler');
 
+var BucketTraver = require('../../model/tomorrow/data/transform/BucketTraver');
+
 var ChartCanvasGL = function (view) {
-    this.sampler = new UniformSampler();
+    this.sampler = new BucketTraver(0);
     this.view = view;
     this.channels = [];
 
@@ -165,17 +167,53 @@ ChartCanvasGL.prototype.paint = function (selection) {
     }
 
     var sampler = this.sampler;
+    sampler.bucketSize =selection.size.x / (this.view.size.x);
 
-    sampler.delta = selection.size.x / (this.view.size.x);
-
-    var sampleCountUpperBound = (selection.size.x / sampler.delta) + 2;
+    var sampleCountUpperBound = (selection.size.x / sampler.bucketSize) + 2;
 
     //render
     paintStart(sampleCountUpperBound);
     var startValue = selection.position.x;
     var endValue = selection.position.x + selection.size.x;
-    sampler.traverse(dataFrame, startValue, endValue, paintSample);
 
+    function doSample() {
+        var min = [];
+        var max = [];
+
+        var sample = [];
+
+        var first = true;
+
+        function visitSample(row) {
+            var i,l;
+            for(i=0, l=row.length; i<l; i++){
+                min[i] = Math.min(min[i], row[i]);
+                max[i] = Math.max(max[i], row[i]);
+            }
+        }
+
+        function visitBucketStart(masterValue) {
+            var i,l;
+            if(first){
+                first = false;
+            }else{
+                sample[masterChannelPosition] = masterValue;
+                for(i=0, l=channels.length; i<l; i++){
+                    var channelIndex = channelIndices[i];
+                    sample[channelIndex] = (min[channelIndex]+max[channelIndex])/2;
+                }
+                paintSample(sample)
+            }
+            for(i=0, l=min.length; i<l; i++){
+                min[i] = Number.POSITIVE_INFINITY;
+                max[i] = Number.NEGATIVE_INFINITY;
+            }
+        }
+
+        sampler.traverse(dataFrame, startValue, endValue, visitSample, visitBucketStart);
+
+    }
+    doSample();
     paintFinish();
 
     //flag for re-rendering
