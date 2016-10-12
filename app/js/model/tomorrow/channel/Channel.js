@@ -30,12 +30,12 @@ var Channel = function Channel() {
     /**
      *
      */
-    this.minValue = new ObservedValue(Number.MAX_VALUE);
+    this.minValue = new ObservedValue(Number.POSITIVE_INFINITY);
 
     /**
      *
      */
-    this.maxValue = new ObservedValue(Number.MIN_VALUE);
+    this.maxValue = new ObservedValue(Number.NEGATIVE_INFINITY);
 };
 
 module.exports = Channel;

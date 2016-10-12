@@ -31,6 +31,8 @@ var AxisRescale = require('../../aspects/axis/AxisRescale');
 var ChannelLegendView = require('../../view/ChannelLegendView');
 var CursorView = require('../../view/tools/cursor/CursorView');
 
+var Preview = require('../../view/Preview');
+
 var GraphBuilder = function () {
     this.selection = new Rectangle(0, 0, 1, 10);
     this.size = new Vector2(800, 600);
@@ -253,54 +255,13 @@ GraphBuilder.prototype.build = function (dataFrame) {
         cursorView.position.set(p);
     });
 
-
-
-
-    // TODO: Extract all this preview stuff in a separate module
-    var previewRange = new Rectangle(0, 0, 0, 0);
-    function adjustLength(value){
-        previewRange.size.set(value, previewRange.size.y);
-    }
-
-    var absoluteMin = Number.POSITIVE_INFINITY;
-    var absoluteMax = Number.NEGATIVE_INFINITY;
-
-    function updateRangeY() {
-        previewRange.position.set(previewRange.position.x, absoluteMin);
-        previewRange.size.set(previewRange.size.x, absoluteMax-absoluteMin);
-    }
-
-    function adjustMin(value){
-        absoluteMin = Math.min(absoluteMin, value);
-        updateRangeY();
-    }
-
-    function adjustRange(value){
-        absoluteMax = Math.max(absoluteMax, value);
-        updateRangeY();
-    }
-
-    dataFrame.channels.forEach(function(channel){
-        if (channel === dataFrame.masterChannel) {
-            channel.maxValue.react(adjustLength);
-        } else {
-            channel.minValue.react(adjustMin);
-            channel.maxValue.react(adjustRange);
-        }
-    });
-
-    var previewCanvas = new ChartCanvas({
+    // add preview
+    var preview = new Preview({
         size: this.previewSize,
-        selection: previewRange,
         dataFrame: dataFrame,
         channelViews: channelViews
     });
-
-    previewCanvas.el.style.position = 'absolute';
-    previewCanvas.el.style.marginLeft = '50px';
-    previewCanvas.el.style.border = 'solid black 1px';
-    previewCanvas.el.style.backgroundColor = 'beige';
-    chart.el.appendChild(previewCanvas.el);
+    chart.el.appendChild(preview.canvas.el);
 
     return chart;
 };
