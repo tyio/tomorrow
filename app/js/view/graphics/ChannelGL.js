@@ -54,14 +54,14 @@ ChannelGL.prototype.paintStart = function (sampleCount) {
     this.__paintArray = aPosition.array;
 };
 
-ChannelGL.prototype.paintPoint = function (x, y) {
+ChannelGL.prototype.paintPoint = function (x, yMin, yMax) {
 
     var paintArray = this.__paintArray;
     var c = this.__paintCursor++;
 
     var i = c * 3;
     paintArray[i] = x;
-    paintArray[i + 1] = y;
+    paintArray[i + 1] = (yMin + yMax) / 2;
 };
 
 ChannelGL.prototype.paintFinish = function () {

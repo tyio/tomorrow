@@ -143,13 +143,14 @@ ChartCanvasGL.prototype.paint = function (selection) {
     var channels = this.channels;
     var masterChannelPosition = dataFrame.getValueIndexByChannel(dataFrame.masterChannel);
 
-    function paintSample(record) {
-        var masterValue = record[masterChannelPosition];
+    function paintSample(recordMin, recordMax) {
+        var masterValue = recordMin[masterChannelPosition];
         for (var i = 0; i < channels.length; i++) {
             var channel = channels[i];
             var channelIndex = channelIndices[i];
-            var value = record[channelIndex];
-            channel.paintPoint(masterValue, value);
+            var valueMin = recordMin[channelIndex];
+            var valueMax = recordMax[channelIndex];
+            channel.paintPoint(masterValue, valueMin,valueMax);
         }
     }
 
@@ -209,7 +210,7 @@ ChartCanvasGL.prototype.paint = function (selection) {
                     var channelIndex = channelIndices[i];
                     sample[channelIndex] = (min[channelIndex] + max[channelIndex]) / 2;
                 }
-                paintSample(sample)
+                paintSample(min,max)
             }
             for (i = 0, l = min.length; i < l; i++) {
                 min[i] = Number.POSITIVE_INFINITY;
