@@ -2,6 +2,10 @@
  * Created by Alex on 13/10/2016.
  */
 
+var RowFirstTable = require('../RowFirstTable');
+
+"use strict";
+
 var SAMPLES_PER_PAGE = 1000;
 
 /**
@@ -174,7 +178,19 @@ ReducedData.prototype.traversePages = function (startMasterValue, endMasterValue
     }
 };
 
+/**
+ *
+ * @param {Number} startMasterValue
+ * @param {Number} endMasterValue
+ * @param {function} visitor
+ */
 ReducedData.prototype.traverse = function (startMasterValue, endMasterValue, visitor) {
+
+    var visitEntity = {
+        min: [],
+        max: []
+    };
+
     /**
      *
      * @param {ReducedDataPage} page
@@ -185,9 +201,22 @@ ReducedData.prototype.traverse = function (startMasterValue, endMasterValue, vis
         var maxData = data.max;
 
         var startIndex = 0;
-        if(page.start < startMasterValue){
-            //page starts before master start value, we need to shift start index
+        var endIndex = maxData.length;
 
+        if (page.start < startMasterValue) {
+            //page starts before master start value, we need to shift start index
+            //TODO implement
+        }
+        if (page.end > endMasterValue) {
+            //page ends after master end value, we need to shift end index
+            //TODO implement
+        }
+
+        for (var i = startIndex; i < endIndex; i++) {
+            minData.getRow(i, visitEntity.min);
+            maxData.getRow(i, visitEntity.max);
+
+            visitor(visitEntity);
         }
     }
 
