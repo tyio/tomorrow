@@ -55,17 +55,18 @@ var ChartCanvasGL = function (view) {
     function handleSampleAdded(index, values) {
         //check if master signal value is in selection range
         var masterSignalValue = values[masterSignalIndex];
-        if(masterSignalValue >= selection.position.x && masterSignalValue <=selection.position.x + selection.size.x){
+        if (masterSignalValue >= selection.position.x && masterSignalValue <= selection.position.x + selection.size.x) {
             //record in selection range
             self.__needsRepaint = true;
         }
     }
+
     view.dataFrame.data.on.added.add(handleSampleAdded);
 
     this.el = renderer.domElement;
 
     function updateView() {
-        if(self.__needsRepaint){
+        if (self.__needsRepaint) {
             self.paint(selection);
             self.__needsRepaint = false;
         }
@@ -167,7 +168,7 @@ ChartCanvasGL.prototype.paint = function (selection) {
     }
 
     var sampler = this.sampler;
-    sampler.bucketSize =selection.size.x / (this.view.size.x);
+    sampler.bucketSize = selection.size.x / (this.view.size.x);
 
     var sampleCountUpperBound = (selection.size.x / sampler.bucketSize) + 2;
 
@@ -185,34 +186,40 @@ ChartCanvasGL.prototype.paint = function (selection) {
         var first = true;
 
         function visitSample(row) {
-            var i,l;
-            for(i=0, l=row.length; i<l; i++){
+
+            var i, l;
+            for (i = 0, l = row.length; i < l; i++) {
                 min[i] = Math.min(min[i], row[i]);
                 max[i] = Math.max(max[i], row[i]);
             }
         }
 
-        function visitBucketStart(masterValue) {
-            var i,l;
-            if(first){
+        function visitBucketStart(masterValue, sampleCount) {
+            if (sampleCount === 0) {
+                //nothing here, skip
+                return;
+            }
+
+            var i, l;
+            if (first) {
                 first = false;
-            }else{
+            } else {
                 sample[masterChannelPosition] = masterValue;
-                for(i=0, l=channels.length; i<l; i++){
+                for (i = 0, l = channels.length; i < l; i++) {
                     var channelIndex = channelIndices[i];
-                    sample[channelIndex] = (min[channelIndex]+max[channelIndex])/2;
+                    sample[channelIndex] = (min[channelIndex] + max[channelIndex]) / 2;
                 }
                 paintSample(sample)
             }
-            for(i=0, l=min.length; i<l; i++){
+            for (i = 0, l = min.length; i < l; i++) {
                 min[i] = Number.POSITIVE_INFINITY;
                 max[i] = Number.NEGATIVE_INFINITY;
             }
         }
 
         sampler.traverse(dataFrame, startValue, endValue, visitSample, visitBucketStart);
-
     }
+
     doSample();
     paintFinish();
 

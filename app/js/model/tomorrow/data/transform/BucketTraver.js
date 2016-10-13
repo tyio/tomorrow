@@ -31,18 +31,21 @@ BucketTraverser.prototype.traverse = function (dataFrame, startValue, endValue, 
 
     var bucketSize = this.bucketSize;
 
-    var lastBucketStart = startValue - bucketSize;
+    var lastBucketStart = startValue;
 
     var masterChannelPosition = dataFrame.getValueIndexByChannel(dataFrame.masterChannel);
 
+    var sampleCount = 0;
     function processSample(index, record) {
         //get master value
         var masterValue = record[masterChannelPosition];
         while (masterValue - lastBucketStart >= bucketSize) {
             //bucket ended, start a new one
             lastBucketStart += bucketSize;
-            visitorBucketStart(lastBucketStart);
+            visitorBucketStart(lastBucketStart, sampleCount);
+            sampleCount = 0;
         }
+        sampleCount++;
         visitorSample(record);
     }
 
