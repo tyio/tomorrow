@@ -53,6 +53,8 @@ var Preview = function (options) {
         if (position < 0) {
             if ((width + position) < 0) {
                 width = 0;
+            } else if (position + width > size.x) {
+                width = size.x;
             } else {
                 width = width + position;
             }
