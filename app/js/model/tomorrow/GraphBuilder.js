@@ -258,10 +258,11 @@ GraphBuilder.prototype.build = function (dataFrame) {
     // add preview
     var preview = new Preview({
         size: this.previewSize,
+        selection: this.selection,
         dataFrame: dataFrame,
         channelViews: channelViews
     });
-    chart.el.appendChild(preview.canvas.el);
+    chart.el.appendChild(preview.el);
 
     return chart;
 };

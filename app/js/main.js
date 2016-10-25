@@ -120,7 +120,7 @@ var builder = new GraphBuilder();
 var chart = builder
     .setSize(950, 600)
     .setPreviewSize(950, 100)
-    .setSelection(0, 0, 30, 50)
+    .setSelection(10, 0, 30, 50)
     .build(dataFrame);
 
 startContinuousDataGeneration(dataFrame.data, 60, generators);

@@ -2,6 +2,7 @@
     position: absolute;
     display: block;
     font-family: 'Questrial', sans-serif;
+    margin-left: 50px;
 }
 
 canvas {
