@@ -253,6 +253,7 @@ GraphBuilder.prototype.build = function (dataFrame) {
     interactionController.pointer.on.move.add(function (position) {
         var p = (position.x / chartCanvas.size.x) * chartCanvas.selection.size.x + chartCanvas.selection.position.x;
         cursorView.position.set(p);
+        cursorView.el.style.display = '';
     });
 
     // add preview
@@ -260,7 +261,8 @@ GraphBuilder.prototype.build = function (dataFrame) {
         size: this.previewSize,
         selection: this.selection,
         dataFrame: dataFrame,
-        channelViews: channelViews
+        channelViews: channelViews,
+        cursorView: cursorView
     });
     chart.el.appendChild(preview.el);
 

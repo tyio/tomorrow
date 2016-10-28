@@ -113,7 +113,7 @@ function startContinuousDataGeneration(table, samplesPerSecond, generators) {
 
 var generators = makeSampleGenerators(dataFrame.data);
 
-generateData(2000, dataFrame.data, generators);
+generateData(10000, dataFrame.data, generators);
 
 var builder = new GraphBuilder();
 
